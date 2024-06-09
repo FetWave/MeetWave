@@ -8,26 +8,25 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using FetWaveWWW.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Ixnas.AltchaNet;
 using FetWaveWWW.Services;
+using Ixnas.AltchaNet;
 
 namespace FetWaveWWW.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<FetWaveWWWUser> _signInManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly AltchaPageService _altcha;
 
         public LoginModel(
-            SignInManager<FetWaveWWWUser> signInManager,
+            SignInManager<IdentityUser> signInManager, 
             ILogger<LoginModel> logger,
             AltchaPageService altcha
         )

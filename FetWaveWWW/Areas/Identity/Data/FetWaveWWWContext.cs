@@ -1,11 +1,10 @@
-﻿using FetWaveWWW.Areas.Identity.Data;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FetWaveWWW.Data;
 
-public class FetWaveWWWContext : IdentityDbContext<FetWaveWWWUser>
+public class FetWaveWWWContext : IdentityDbContext<IdentityUser>
 {
     public FetWaveWWWContext(DbContextOptions<FetWaveWWWContext> options)
         : base(options)

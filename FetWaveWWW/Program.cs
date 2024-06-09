@@ -1,18 +1,16 @@
 using Microsoft.EntityFrameworkCore;
-using FetWaveWWW.Data;
-using FetWaveWWW.Areas.Identity.Data;
-using Microsoft.AspNetCore.Identity;
 using FetWaveWWW.Services;
 using Ixnas.AltchaNet;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using FetWaveWWW.Data;
+using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("FetWaveWWWContextConnection") ?? throw new InvalidOperationException("Connection string 'FetWaveWWWContextConnection' not found.");
 
 builder.Services.AddDbContext<FetWaveWWWContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services
-    .AddIdentity<FetWaveWWWUser,FetWaveWWWRole>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<FetWaveWWWContext>()
-    .AddDefaultUI();
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<FetWaveWWWContext>();
+
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -21,6 +19,9 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSingleton<AltchaPageService>();
 builder.Services.AddSingleton<IAltchaChallengeStore, AltchaCache>();
+
+builder.Services.AddSingleton<GoogleServices>();
+builder.Services.AddSingleton<IEmailSender, GoogleServices>();
 
 var app = builder.Build();
 

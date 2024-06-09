@@ -23,7 +23,7 @@ namespace FetWaveWWW.Services
 
             string[] Scopes = { CalendarService.Scope.Calendar, GmailService.Scope.GmailSend, GmailService.Scope.MailGoogleCom };
 
-            ServiceAccountCredential credential;
+            ServiceAccountCredential? credential;
 
             using var stream = new FileStream(Configuration["Google_API_PRIVATE_KEYFILE"]!, FileMode.Open, FileAccess.Read);
             var confg = Google.Apis.Json.NewtonsoftJsonSerializer.Instance.Deserialize<JsonCredentialParameters>(stream);
@@ -49,9 +49,9 @@ namespace FetWaveWWW.Services
         private static string GetEmailBccRaw(string toEmail, string subject, string body)
             => Base64UrlEncoder.Encode($"Bcc: {toEmail}\r\nSubject: {subject}\r\nContent-Type: text/html;charset=utf-8\r\n\r\n{body}");
 
-        public async  Task SendEmailAsync(string email, string subject, string htmlMessage)
+        public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            Gmail.Users.Messages.Send(new Message { Raw = GetEmailRaw(email, subject, htmlMessage) }, "me").Execute();
+            await Task.FromResult(() => Gmail.Users.Messages.Send(new Message { Raw = GetEmailRaw(email, subject, htmlMessage) }, "me").Execute());
         }
 
         public async Task EmailListAsync(IEnumerable<string> emails, string subject, string body)
@@ -59,7 +59,7 @@ namespace FetWaveWWW.Services
             for (int i = 0; i < emails.Count(); i += 100)
             {
                 var batchEmails = emails.Skip(i).Take(100);
-                Gmail.Users.Messages.Send(new Message { Raw = GetEmailBccRaw(string.Join(", ", batchEmails), subject, body) }, "me").Execute();
+                await Task.FromResult(() => Gmail.Users.Messages.Send(new Message { Raw = GetEmailBccRaw(string.Join(", ", batchEmails), subject, body) }, "me").Execute());
             }
             
         }
@@ -84,13 +84,13 @@ namespace FetWaveWWW.Services
             return null;
         }
 
-        public async Task ClearEventCache()
+        public void ClearEventCache()
         {
             foreach(var key in cacheKeys)
             {
                 cache.Remove(key);
             }
-            cacheKeys = new();
+            cacheKeys = [];
         }
     }
 }
