@@ -29,6 +29,7 @@ namespace FetWaveWWW.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        [BindProperty]
         public string Username { get; set; }
 
         /// <summary>
@@ -106,6 +107,16 @@ namespace FetWaveWWW.Areas.Identity.Pages.Account.Manage
                 if (!setPhoneResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
+                    return RedirectToPage();
+                }
+            }
+            
+            if (Username != user.UserName)
+            {
+                var setUsername = await _userManager.SetUserNameAsync(user, Username);
+                if (!setUsername.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set username.";
                     return RedirectToPage();
                 }
             }

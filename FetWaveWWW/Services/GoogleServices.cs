@@ -15,13 +15,13 @@ namespace FetWaveWWW.Services
     {
         public readonly CalendarService Calendar;
         public readonly GmailService Gmail;
-        private IMemoryCache cache;
+        private readonly IMemoryCache cache;
 
         public GoogleServices(IConfiguration Configuration, IMemoryCache memoryCache)
         {
             cache= memoryCache;
 
-            string[] Scopes = { CalendarService.Scope.Calendar, GmailService.Scope.GmailSend, GmailService.Scope.MailGoogleCom };
+            string[] Scopes = [CalendarService.Scope.Calendar, GmailService.Scope.GmailSend, GmailService.Scope.MailGoogleCom];
 
             ServiceAccountCredential? credential;
 
@@ -51,7 +51,7 @@ namespace FetWaveWWW.Services
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            await Task.FromResult(() => Gmail.Users.Messages.Send(new Message { Raw = GetEmailRaw(email, subject, htmlMessage) }, "me").Execute());
+            await Gmail.Users.Messages.Send(new Message { Raw = GetEmailRaw(email, subject, htmlMessage) }, "me").ExecuteAsync();
         }
 
         public async Task EmailListAsync(IEnumerable<string> emails, string subject, string body)
@@ -59,14 +59,14 @@ namespace FetWaveWWW.Services
             for (int i = 0; i < emails.Count(); i += 100)
             {
                 var batchEmails = emails.Skip(i).Take(100);
-                await Task.FromResult(() => Gmail.Users.Messages.Send(new Message { Raw = GetEmailBccRaw(string.Join(", ", batchEmails), subject, body) }, "me").Execute());
+                await Gmail.Users.Messages.Send(new Message { Raw = GetEmailBccRaw(string.Join(", ", batchEmails), subject, body) }, "me").ExecuteAsync();
             }
             
         }
 
-        private HashSet<string> cacheKeys = new HashSet<string>();
+        private HashSet<string> cacheKeys = [];
 
-        public Event? GetEvent(string calendarId, string eventId)
+        public async Task<Event?> GetEvent(string calendarId, string eventId)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace FetWaveWWW.Services
                 {
                     return cachedEvent;
                 }
-                var newEvent = Calendar.Events.Get(calendarId, eventId).Execute();
+                var newEvent = await Calendar.Events.Get(calendarId, eventId).ExecuteAsync();
                 cache.Set(key, newEvent);
                 cacheKeys.Add(key);
                 return newEvent;

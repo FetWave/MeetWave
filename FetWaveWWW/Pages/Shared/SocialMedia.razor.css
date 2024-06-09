@@ -1,0 +1,66 @@
+﻿/*Social Media Styling*/
+.social-logo {
+    width: 25px;
+}
+
+.github-logo {
+    content: url("/img/github-mark.svg");
+}
+
+.fetlife-logo {
+    content: url("/img/fetlife.svg");
+}
+
+.discord-logo {
+    content: url("/img/discord-mark-blue.svg");
+}
+
+.facebook-logo {
+    content: url("/img/facebook.svg")
+}
+
+:is(:where(.dark) .dark\:fill-gold-500) {
+    fill: #ddbe76;
+}
+
+.fill-gold-700 {
+    fill: #bc8c4e;
+}
+
+:is(:where(.dark) .dark\:fill-gold-500) {
+    fill: #ddbe76;
+}
+
+.fill-gold-700 {
+    fill: #bc8c4e;
+}
+
+#hero .icon-boxes {
+    margin-top: 100px;
+}
+
+.row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: calc(-1 * var(--bs-gutter-y));
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x));
+}
+
+#hero .icon-box {
+    padding: 20px 20px;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 0 29px 0 rgba(18, 66, 101, 0.08);
+    transition: all 0.3s ease-in-out;
+    border-radius: 8px;
+    z-index: 1;
+    margin-bottom: 20px;
+}
+
+#hero .icon-box:hover {
+    transform: scale(1.08);
+}

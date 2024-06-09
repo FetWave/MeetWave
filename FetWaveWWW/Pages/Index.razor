@@ -1,5 +1,22 @@
 ﻿@page "/"
+@using FetWaveWWW.Pages.Shared
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<HeadContent>
+    <meta property="og:title" content="FetWave" />
+    <meta property="og:description" content="Making Waves in the Fetish Scene" />
+</HeadContent>
+
+
+<section id="hero" class="row align-items-center" style="min-height:100vh;">
+    <div class="col-md-12 col-lg-6">
+        <h1 class="text-center align-middle title-header">Fetwave</h1>
+    </div>
+    <div class="col-md-12 col-lg-6">
+        <h2>Our Purpose</h2>
+    </div>
+    <div class="container position-relative aos-init aos-animate">
+        <SocialMedia />
+    </div>
+</section>
