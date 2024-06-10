@@ -7,14 +7,14 @@
 }
 
 #hero {
-    background: url("/img/thumbs.webp") top center;
+    content: "";
+    background: url("data:image/svg+xml;utf8, <svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='100px' width='120px'> <text x='0' y='40' fill='red' font-size='40' textLength='80%'>👋😈</text> </svg>") top center, radial-gradient(#e66465, #9198e5);
     background-size: cover;
-    background-attachment: fixed;
     position: relative;
     z-index: -2;
 }
 
-#hero:before {
+#hero:after {
     content: "";
     background: rgba(255, 255, 255, 0.8);
     position: absolute;
