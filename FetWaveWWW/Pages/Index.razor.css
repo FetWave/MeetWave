@@ -6,6 +6,10 @@
     font-size: 400%;
 }
 
+#hero>div {
+    z-index:1;
+}
+
 #hero {
     content: "";
     background: url("data:image/svg+xml;utf8, <svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='100px' width='120px'> <text x='0' y='40' fill='red' font-size='40' textLength='80%'>👋😈</text> </svg>") top center, radial-gradient(#e66465, #9198e5);
