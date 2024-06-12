@@ -16,22 +16,26 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using FetWaveWWW.Services;
 using Ixnas.AltchaNet;
+using Microsoft.EntityFrameworkCore;
 
 namespace FetWaveWWW.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly AltchaPageService _altcha;
 
         public LoginModel(
             SignInManager<IdentityUser> signInManager, 
+            UserManager<IdentityUser> userManager,
             ILogger<LoginModel> logger,
             AltchaPageService altcha
         )
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _logger = logger;
             _altcha = altcha;
         }
@@ -75,8 +79,7 @@ namespace FetWaveWWW.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            public string Username { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -125,9 +128,12 @@ namespace FetWaveWWW.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, "Invalid Altcha.");
                     return Page();
                 }
+
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => EF.Functions.Like(u.UserName, Input.Username) || EF.Functions.Like(u.Email, Input.Username));
+
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(user, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
