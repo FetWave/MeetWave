@@ -23,11 +23,17 @@ builder.Services.AddSingleton<IAltchaChallengeStore, AltchaCache>();
 builder.Services.AddSingleton<GoogleServices>();
 builder.Services.AddSingleton<IEmailSender, GoogleServices>();
 
-builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-{
-    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-});
+builder.Services.AddAuthentication()
+    .AddGoogle(googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    })
+    .AddDiscord(discordOptions =>
+    {
+        discordOptions.ClientId = builder.Configuration["Authentication:Discord:ClientId"]!;
+        discordOptions.ClientSecret = builder.Configuration["Authentication:Discord:ClientSecret"]!;
+    });
 
 var app = builder.Build();
 
