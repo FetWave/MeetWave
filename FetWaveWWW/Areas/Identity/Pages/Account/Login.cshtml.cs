@@ -128,8 +128,13 @@ namespace FetWaveWWW.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, "Invalid Altcha.");
                     return Page();
                 }
-
                 var user = await _userManager.Users.FirstOrDefaultAsync(u => EF.Functions.Like(u.UserName, Input.Username) || EF.Functions.Like(u.Email, Input.Username));
+
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
+                }
 
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
