@@ -398,4 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 FetWaveWWW/Credentials/
-appsettings.Prod.json*
+appsettings.Prod.json
