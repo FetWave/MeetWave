@@ -397,4 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-FetWaveWWW/Credentials/*
+FetWaveWWW/Credentials/
+appsettings.Prod.json*
