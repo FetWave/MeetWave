@@ -13,14 +13,21 @@
 }
 
 <h3>Events</h3>
+@if(UserId.HasValue)
+{
+    <button @onclick="NavCreateEvent">Create Event</button>
+}
+
 
 <div>
     Date
     <br />
-    <label>From Date:</label>
-    <input type="date" @bind="CalendarStartDate" />
-    <label>To Date:</label>
-    <input type="date" @bind="CalendarEndDate" />
+    <span>
+        <label>From Date:</label>
+        <input type="date" @bind="CalendarStartDate" />
+        <label>To Date:</label>
+        <input type="date" @bind="CalendarEndDate" />
+    </span>
 </div>
 
 <div>
@@ -38,6 +45,10 @@
         Region Filter:
         <select @onchange="RegionOnChange">
             <option value=""></option>
+            @if (!string.IsNullOrEmpty(StateCode) && (regionsForState ?? []).Count() > 1)
+            {
+                <option value="all">All</option>
+            }
             @foreach (var region in regionsForState ?? [])
             {
                 <option value="@region.Id">@ti.ToTitleCase(region.Name ?? "")</option>

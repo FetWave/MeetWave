@@ -1,0 +1,11 @@
+﻿@page "/event/new"
+@page "/event/edit/{eventGuid}"
+
+@{
+    var action = string.IsNullOrEmpty(eventGuid)
+        ? "New"
+        : "Edit";
+}
+
+<h3>@action Event</h3>
+

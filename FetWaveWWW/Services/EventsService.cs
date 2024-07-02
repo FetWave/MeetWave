@@ -40,12 +40,14 @@ namespace FetWaveWWW.Services
             });
 
         private async Task<IList<CalendarEvent>?> GetCachedEventsForRegion(DateTime startTime, DateTime endTime, int regionId)
-            => (await _cache.GetOrCreateAsync($"Events:{regionId}", async entry =>
-            {
-                entry.AbsoluteExpiration = DateTime.UtcNow.AddMinutes(5);
-                //Cache events from one month in the past until one year in the future
-                return await _context.Events.Where(e => e.EndDate > DateTime.UtcNow.AddMonths(-1) && e.StartDate < DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
-            }) ?? []).Where(e => e.StartDate >= startTime && e.StartDate <= endTime).ToList();
+            => startTime >= DateTime.UtcNow.AddMonths(-1) && endTime <= DateTime.UtcNow.AddYears(1)
+                ? (await _cache.GetOrCreateAsync($"Events:{regionId}", async entry =>
+                    {
+                         entry.AbsoluteExpiration = DateTime.UtcNow.AddMinutes(5);
+                        //Cache events from one month in the past until one year in the future
+                        return await _context.Events.Where(e => e.EndDate >= DateTime.UtcNow.AddMonths(-1) && e.StartDate <= DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
+                    }) ?? []).Where(e => e.StartDate >= startTime && e.StartDate <= endTime).ToList()
+                : await _context.Events.Where(e => e.EndDate > DateTime.UtcNow.AddMonths(-1) && e.StartDate < DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
 
         public async Task<IEnumerable<Region>?> GetRegions()
             =>  await GetCachedRegions();
@@ -68,6 +70,6 @@ namespace FetWaveWWW.Services
             => await GetCachedEventsForRegion(startTime, endTime, regionId);
 
         public async Task<IEnumerable<CalendarEvent>?> GetEventsForState(DateTime startTime, DateTime endTime, string stateCode)
-            => (await Task.WhenAll((await GetRegions(stateCode: stateCode))?.Select(async r => await GetEventsForRegion(startTime, endTime, r.Id)) ?? []))?.SelectMany(e => e);
+            => (await GetRegions(stateCode: stateCode))?.Select(async r => await GetEventsForRegion(startTime, endTime, r.Id)).Select(e => e.Result)?.SelectMany(e => e);
     }
 }

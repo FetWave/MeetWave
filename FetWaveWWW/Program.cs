@@ -28,6 +28,7 @@ builder.Services.AddSingleton<IEmailSender, GoogleServices>();
 builder.Services.AddScoped<SeedDataService>();
 
 builder.Services.AddScoped<EventsService>();
+builder.Services.AddScoped<AuthHelperService>();
 
 builder.Services.AddAuthentication()
     .AddGoogle(googleOptions =>

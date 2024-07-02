@@ -2,6 +2,8 @@
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.VisualBasic;
 
 namespace FetWaveWWW.Pages.Events
 {
@@ -14,11 +16,18 @@ namespace FetWaveWWW.Pages.Events
         [Inject]
         public IConfiguration Configuration { get; set; }
         [Inject]
-        private NavigationManager navigation { get; set; }
+        public AuthHelperService Auth { get; set; }
+        [Inject]
+        private NavigationManager Navigation { get; set; }
 #nullable enable
 
         protected override async Task OnInitializedAsync()
         {
+            if (Guid.TryParse(await Auth.GetUserId(), out var userId))
+            {
+                UserId = userId;
+            }
+
             Regions = await Events.GetRegions();
             var statesList = new List<string>()
             {
@@ -56,6 +65,11 @@ namespace FetWaveWWW.Pages.Events
         }
         async void RegionOnChange(ChangeEventArgs e)
         {
+            if (e.Value?.ToString()?.Equals("all", StringComparison.OrdinalIgnoreCase) ?? false)
+            {
+                await GetEventsForState();
+                return;
+            }
             if (int.TryParse(e.Value!.ToString(), out var regionId))
             {
                 RegionId = regionId;
@@ -74,12 +88,17 @@ namespace FetWaveWWW.Pages.Events
 
         private async Task<IEnumerable<CalendarEvent>?> GetEventsForRegion()
             => CalendarEvents = (RegionId ?? 0) > 0
-            ? await Events.GetEventsForRegion(CalendarStartDate, CalendarEndDate, RegionId!.Value)
-            : [];
+                ? await Events.GetEventsForRegion(CalendarStartDate, CalendarEndDate, RegionId!.Value)
+                : [];
+
+        private async Task<IEnumerable<CalendarEvent>?> GetEventsForState()
+            => CalendarEvents = !string.IsNullOrEmpty(StateCode)
+                ? await Events.GetEventsForState(CalendarStartDate, CalendarEndDate, StateCode)
+                : [];
 
         private IEnumerable<Region>? Regions { get; set; }
         private IEnumerable<string>? States { get; set; }
-        private string? UserId { get; set; }
+        private Guid? UserId { get; set; }
 
 
 
@@ -87,5 +106,10 @@ namespace FetWaveWWW.Pages.Events
         private DateTime CalendarEndDate { get; set; } = DateTime.Now.AddMonths(1).Date;
 
         private IEnumerable<CalendarEvent>? CalendarEvents { get; set; }
+
+        private void NavCreateEvent()
+        {
+            Navigation.NavigateTo("/event/new");
+        }
     }
 }
