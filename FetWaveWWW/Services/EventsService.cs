@@ -1,8 +1,6 @@
 ﻿using FetWaveWWW.Data;
 using FetWaveWWW.Data.DTOs.Events;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace FetWaveWWW.Services
@@ -19,7 +17,7 @@ namespace FetWaveWWW.Services
         }
 
         private async Task<IList<Region>?> GetCachedRegions()
-            => await _cache.GetOrCreateAsync("EventRegions",async entry =>
+            => await _cache.GetOrCreateAsync("EventRegions", async entry =>
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(12);
                 return await _context.Regions.ToListAsync();
@@ -43,18 +41,18 @@ namespace FetWaveWWW.Services
             => startTime >= DateTime.UtcNow.AddMonths(-1) && endTime <= DateTime.UtcNow.AddYears(1)
                 ? (await _cache.GetOrCreateAsync($"Events:{regionId}", async entry =>
                     {
-                         entry.AbsoluteExpiration = DateTime.UtcNow.AddMinutes(5);
+                        entry.AbsoluteExpiration = DateTime.UtcNow.AddMinutes(5);
                         //Cache events from one month in the past until one year in the future
                         return await _context.Events.Where(e => e.EndDate >= DateTime.UtcNow.AddMonths(-1) && e.StartDate <= DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
                     }) ?? []).Where(e => e.StartDate >= startTime && e.StartDate <= endTime).ToList()
                 : await _context.Events.Where(e => e.EndDate > DateTime.UtcNow.AddMonths(-1) && e.StartDate < DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
 
         public async Task<IEnumerable<Region>?> GetRegions()
-            =>  await GetCachedRegions();
+            => await GetCachedRegions();
 
         public async Task<IEnumerable<Region>?> GetRegions(string? stateCode = null, string? name = null)
-            => (await GetCachedRegions())?.Where(r => 
-            (stateCode == null || (r.StateCode?.Equals(stateCode, StringComparison.OrdinalIgnoreCase) ?? false)) 
+            => (await GetCachedRegions())?.Where(r =>
+            (stateCode == null || (r.StateCode?.Equals(stateCode, StringComparison.OrdinalIgnoreCase) ?? false))
             && (name == null || (r.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false)));
 
         public async Task<IEnumerable<DressCode>?> GetDressCodes()

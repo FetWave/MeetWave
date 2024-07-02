@@ -1,5 +1,4 @@
 ﻿using FetWaveWWW.Data.DTOs.Events;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace FetWaveWWW.Data

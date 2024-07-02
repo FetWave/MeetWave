@@ -1,5 +1,4 @@
-﻿using NuGet.Protocol;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FetWaveWWW.Data.DTOs.Events
 {

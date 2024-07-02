@@ -11,7 +11,7 @@ namespace FetWaveWWW.Services
             _provider = stateProvider;
         }
 
-       public async Task<string?> GetUserId()
-            => (await _provider.GetAuthenticationStateAsync()).User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        public async Task<string?> GetUserId()
+             => (await _provider.GetAuthenticationStateAsync()).User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
     }
 }

@@ -2,8 +2,6 @@
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using System.Security.Claims;
 
 namespace FetWaveWWW.Pages.Events
 {
@@ -14,7 +12,7 @@ namespace FetWaveWWW.Pages.Events
         public string? eventGuid { get; set; }
 
         [Inject]
-        public EventsService Events {  get; set; }
+        public EventsService Events { get; set; }
         [Inject]
         public AuthHelperService Auth { get; set; }
         [Inject]

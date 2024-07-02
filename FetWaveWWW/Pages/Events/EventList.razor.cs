@@ -2,8 +2,6 @@
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.VisualBasic;
 
 namespace FetWaveWWW.Pages.Events
 {

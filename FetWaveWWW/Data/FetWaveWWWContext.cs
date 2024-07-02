@@ -2,16 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
 
 namespace FetWaveWWW.Data;
 
 public class FetWaveWWWContext : IdentityDbContext<IdentityUser>
 {
     public FetWaveWWWContext(DbContextOptions<FetWaveWWWContext> options)
-        : base(options) {}
+        : base(options) { }
 
     public DbSet<CalendarEvent> Events { get; set; }
     public DbSet<Category> Categories { get; set; }
