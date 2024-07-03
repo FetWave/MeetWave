@@ -11,7 +11,13 @@ namespace FetWaveWWW.Services
             _provider = stateProvider;
         }
 
+        public async Task<string?> GetUserClaim(string claimType)
+            => (await _provider.GetAuthenticationStateAsync()).User.Claims.FirstOrDefault(c => c.Type == claimType)?.Value;
+
         public async Task<string?> GetUserId()
-             => (await _provider.GetAuthenticationStateAsync()).User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+             => await GetUserClaim(ClaimTypes.NameIdentifier);
+
+        public async Task<string?> GetUserEmail()
+            => await GetUserClaim(ClaimTypes.Email);
     }
 }
