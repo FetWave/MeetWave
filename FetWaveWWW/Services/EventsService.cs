@@ -47,6 +47,24 @@ namespace FetWaveWWW.Services
                     }) ?? []).Where(e => e.StartDate >= startTime && e.StartDate <= endTime).ToList()
                 : await _context.Events.Where(e => e.EndDate > DateTime.UtcNow.AddMonths(-1) && e.StartDate < DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
 
+        private async Task<Guid> AddEditEvent(CalendarEvent calendarEvent)
+        {
+            if (calendarEvent.Id == 0)
+            {
+                _context.Add(calendarEvent);
+            }
+            else
+            {
+                _context.Attach(calendarEvent);
+            }
+
+            await _context.SaveChangesAsync();
+
+            _cache.Remove($"Events:{calendarEvent.RegionId}");
+
+            return calendarEvent.Unique_Id;
+        }
+
         public async Task<IEnumerable<Region>?> GetRegions()
             => await GetCachedRegions();
 
@@ -69,5 +87,8 @@ namespace FetWaveWWW.Services
 
         public async Task<IEnumerable<CalendarEvent>?> GetEventsForState(DateTime startTime, DateTime endTime, string stateCode)
             => (await GetRegions(stateCode: stateCode))?.Select(async r => await GetEventsForRegion(startTime, endTime, r.Id)).Select(e => e.Result)?.SelectMany(e => e);
+
+        public async Task<Guid> UpsertEvent(CalendarEvent calendarEvent)
+            => await AddEditEvent(calendarEvent);
     }
 }
