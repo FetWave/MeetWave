@@ -49,7 +49,7 @@
                     <h5><i class="bi bi-clock"></i>@($"Happening on {startTime?.DayOfWeek} {startTime:MM/dd/yyyy} at {startTime:hh:mm tt}")</h5>
                 @if(!string.IsNullOrEmpty(calendarEvent.Address))
                 {
-                    var locQuery = $"{calendarEvent.Address} {calendarEvent.Region?.Name} {calendarEvent.Region?.StateCpde}";
+                    var locQuery = $"{calendarEvent.Address} {calendarEvent.Region?.Name} {calendarEvent.Region?.StateCode}";
                     <h5><a href="https://www.google.com/maps/search/?api=1&query=@HttpUtility.UrlEncode(locQuery)"><i class="bi bi-map"></i>@calendarEvent.Address</a></h5>
                     <p>@calendarEvent.Region?.Name</p>
                     <p>@calendarEvent.Region?.StateCode</p>
