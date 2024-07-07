@@ -13,6 +13,8 @@ namespace FetWaveWWW.Pages.Events
         public EventCallback<OnRegionChangeCallbackArgs> OnRegionChange { get; set; }
         [Parameter]
         public bool ShowAllRegion { get; set; }
+        [Parameter]
+        public int? SelectedRegionId { get; set; }
         [Inject]
         public EventsService Events { get; set; }
 #nullable enable
@@ -35,7 +37,23 @@ namespace FetWaveWWW.Pages.Events
                 ?? []);
 
             States = statesList;
+
+            if (SelectedRegionId.HasValue)
+            {
+                var region = Regions?.FirstOrDefault(r => r.Id == SelectedRegionId.Value);
+                if (region != null)
+                {
+                    StartStateValue = region.StateCode!;
+                    StateCode = region.StateCode;
+                    GetRegionsForState();
+                    StartRegionValue = region.Id.ToString();
+                    RegionId = region.Id;
+                }
+            }
         }
+
+        private string StartStateValue { get; set; } = string.Empty;
+        private string StartRegionValue { get; set; } = string.Empty;
 
         private IEnumerable<Region>? Regions { get; set; }
         private IEnumerable<string>? States { get; set; }

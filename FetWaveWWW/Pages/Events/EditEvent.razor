@@ -9,3 +9,25 @@
 
 <h3>@action Event</h3>
 
+<EditForm EditContext="editContext" OnValidSubmit="@SaveEvent">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Event Title:</label>
+        <input type="text" class="form-control" required="required" @bind="SelectedEvent!.Title" />
+    </div>
+    <div class="form-group">
+        <label>Event Description:</label>
+        <input type="text" class="form-control" required="required" @bind="SelectedEvent!.Description" />
+    </div>
+    <div class="form-group">
+        <label>Starts At:</label>
+        <input type="datetime-local" class="form-control" required="required" @bind="SelectedEvent!.StartDate" />
+    </div>
+    <div class="form-group">
+        <label>Ends At:</label>
+        <input type="datetime-local" class="form-control" required="required" @bind="SelectedEvent!.EndDate" />
+    </div>
+    <RegionSelector OnRegionChange="@SetRegionId" SelectedRegionId="@SelectedEvent!.RegionId"/>
+    <button type="submit">Submit</button>
+</EditForm>

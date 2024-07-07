@@ -26,18 +26,19 @@ namespace FetWaveWWW.Data.DTOs.Events
         public string? UpdatedUserId { get; set; }
 
         //Meta-data
+        [Required(ErrorMessage = "Region is required to plan an event.")]
         public int? RegionId { get; set; }
         public int? CategoryId { get; set; }
         public int? DressCodeId { get; set; }
 
         //Event Info
-        [Required]
+        [Required(ErrorMessage = "Start Time is required to plan an event.")]
         public DateTime? StartDate { get; set; }
-        [Required]
+        [Required(ErrorMessage = "End Time is required to plan an event.")]
         public DateTime? EndDate { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Event Title is required to plan an event.")]
         public string? Title { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Event Description is required to plan an event.")]
         public string? Description { get; set; }
         public string? ImageUrl { get; set; }
         public string? Address { get; set; }

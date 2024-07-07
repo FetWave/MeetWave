@@ -28,3 +28,43 @@
 </div>
 
 <RegionSelector OnRegionChange="@GetEventsForRegion" ShowAllRegion="true"/>
+
+<div class="container">
+    @foreach(var calendarEvent in CalendarEvents ?? [])
+    {
+        var startTime = calendarEvent.StartDate;
+
+        <div class="card">
+            <div class="card-header">
+                <form class="form-inline">
+                    
+                </form>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title"><a href="@($"/events/{calendarEvent.Id}")">@calendarEvent.Title</a></h3>
+                <div class="share">
+                    <button type="button" class="btn btn-info" onclick=@($"copyToClipboard(event, 'https://tngaz.org/events/{calendarEvent.Id}')")>Copy Link</button>
+                </div>
+                <div class="eventDetails">
+                    <h5><i class="bi bi-clock"></i>@($"Happening on {startTime?.DayOfWeek} {startTime:MM/dd/yyyy} at {startTime:hh:mm tt}")</h5>
+                @if(!string.IsNullOrEmpty(calendarEvent.Address))
+                {
+                    var locQuery = $"{calendarEvent.Address} {calendarEvent.Region?.Name} {calendarEvent.Region?.StateCpde}";
+                    <h5><a href="https://www.google.com/maps/search/?api=1&query=@HttpUtility.UrlEncode(locQuery)"><i class="bi bi-map"></i>@calendarEvent.Address</a></h5>
+                    <p>@calendarEvent.Region?.Name</p>
+                    <p>@calendarEvent.Region?.StateCode</p>
+                } 
+                </div>
+                <p class="card-text">
+                @{
+                    var displayDescription = calendarEvent.Description;
+                    displayDescription = displayDescription?.Substring(0, Math.Min(displayDescription.Length, 300))
+                        + (displayDescription.Length > 300 ? "..." : string.Empty);
+                }        
+                @displayDescription
+                </p>
+            </div>
+        </div>
+    <br/>        
+    }
+</div>

@@ -2,6 +2,8 @@
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using static FetWaveWWW.Pages.Events.RegionSelector;
 
 namespace FetWaveWWW.Pages.Events
 {
@@ -45,17 +47,37 @@ namespace FetWaveWWW.Pages.Events
                 }
                 else
                 {
-                    SelectedEvent = new CalendarEvent();
+                    SelectedEvent = new CalendarEvent()
+                    { 
+                        CreatedUserId = UserId.ToString()
+                    };
                 }
             }
             else
             {
                 Navigation.NavigateTo("/events");
             }
+
+            editContext = new EditContext(SelectedEvent);
+
+            messageStore = new(editContext);
         }
 
         private Guid UserId { get; set; }
 
         private CalendarEvent? SelectedEvent { get; set; }
+
+        private EditContext? editContext;
+        private ValidationMessageStore? messageStore;
+
+
+        private async void SetRegionId(OnRegionChangeCallbackArgs args)
+        {
+            SelectedEvent!.RegionId = int.Parse(args.region!);
+        }
+        private async void SaveEvent()
+        {
+            await Events.UpsertEvent(SelectedEvent!);
+        }
     }
 }
