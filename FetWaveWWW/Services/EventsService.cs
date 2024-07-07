@@ -47,7 +47,9 @@ namespace FetWaveWWW.Services
                         .Include(e => e.Region)
                         .Where(e => e.EndDate >= DateTime.UtcNow.AddMonths(-1) && e.StartDate <= DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
                     }) ?? []).Where(e => e.StartDate >= startTime && e.StartDate <= endTime).ToList()
-                : await _context.Events.Where(e => e.EndDate > DateTime.UtcNow.AddMonths(-1) && e.StartDate < DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
+                : await _context.Events
+                    .Include(e => e.Region)
+                    .Where(e => e.EndDate > DateTime.UtcNow.AddMonths(-1) && e.StartDate < DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
 
         private async Task<Guid> AddEditEvent(CalendarEvent calendarEvent)
         {
