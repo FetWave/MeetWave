@@ -84,7 +84,9 @@ namespace FetWaveWWW.Services
             => await GetCachedCategories();
 
         public async Task<CalendarEvent?> GetEventById(int? id = null, Guid? guid = null)
-            => await _context.Events.FirstOrDefaultAsync(e => e.Id == id || e.Unique_Id == guid);
+            => await _context.Events
+                .Include(e => e.Region)
+                .FirstOrDefaultAsync(e => e.Id == id || e.Unique_Id == guid);
 
         public async Task<IEnumerable<CalendarEvent>?> GetEventsForRegion(DateTime startTime, DateTime endTime, int regionId)
             => await GetCachedEventsForRegion(startTime, endTime, regionId);

@@ -32,9 +32,12 @@ namespace FetWaveWWW.Pages.Events
         private string? StateCode { get; set; }
 
         public async void GetEventsForRegion(OnRegionChangeCallbackArgs args)
-            => CalendarEvents = (args.region?.Equals("all", StringComparison.OrdinalIgnoreCase) ?? false) && !string.IsNullOrEmpty(args.state)
+        {
+            CalendarEvents = (args.region?.Equals("all", StringComparison.OrdinalIgnoreCase) ?? false) && !string.IsNullOrEmpty(args.state)
                 ? await Events.GetEventsForState(CalendarStartDate, CalendarEndDate, args.state)
                 : await Events.GetEventsForRegion(CalendarStartDate, CalendarEndDate, int.TryParse(args.region, out var regionId) ? regionId : throw new Exception("Invalid region selection"));
+            StateHasChanged();
+        }
         
         private Guid? UserId { get; set; }
 
@@ -46,6 +49,11 @@ namespace FetWaveWWW.Pages.Events
         private void NavCreateEvent()
         {
             Navigation.NavigateTo("/event/new");
+        }
+
+        private void GotoEditEvent(string eventGuid)
+        {
+            Navigation.NavigateTo($"/event/edit/{eventGuid}");
         }
     }
 }
