@@ -5,7 +5,7 @@ using System.Diagnostics.Contracts;
 
 namespace FetWaveWWW.Pages.Events
 {
-    public partial class RegionSelector
+    public partial class RegionSelector : ComponentBase
     {
 
 #nullable disable
