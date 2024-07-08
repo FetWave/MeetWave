@@ -1,4 +1,16 @@
-﻿async function downloadFileFromStream(fileName, contentStreamReference) {
+﻿function scrollIntoView(elementId) {
+    var elem = document.getElementById(elementId);
+    if (elem) {
+        elem.scrollIntoView({ block: "center" });
+        window.location.hash = elementId;
+    }
+}
+
+function scrollToTop() {
+    window.scrollTo(0, 0);
+}
+
+async function downloadFileFromStream(fileName, contentStreamReference) {
     const arrayBuffer = await contentStreamReference.arrayBuffer();
     const blob = new Blob([arrayBuffer]);
     const url = URL.createObjectURL(blob);
@@ -8,4 +20,24 @@
     anchorElement.click();
     anchorElement.remove();
     URL.revokeObjectURL(url);
+}
+
+function copyToClipboard(event, url) {
+    navigator.clipboard.writeText(url).then(function () {
+        event.target.classList.add('btn-info-outline');
+        event.target.classList.remove('btn-info');
+        setTimeout(function () {
+            event.target.classList.add('btn-info');
+            event.target.classList.remove('btn-info-outline');
+        }, 2000);
+    }, function () {
+        console.log('Copy error')
+    });
+}
+
+async function getAltcha() {
+    while (!document.getElementsByName('altcha').length) {
+        await new Promise(r => setTimeout(r, 500));
+    }
+    return document.getElementsByName('altcha')[0].value;
 }

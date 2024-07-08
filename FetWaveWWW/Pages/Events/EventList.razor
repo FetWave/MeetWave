@@ -9,6 +9,11 @@
     };
 }
 
+<HeadContent>
+    <meta property="og:title" content="Fetwave Events" />
+    <meta property="og:description" content="View Fetwave Calendar" />
+</HeadContent>
+
 <h3>Events</h3>
 @if(UserId.HasValue)
 {
@@ -21,9 +26,9 @@
     <br />
     <span>
         <label>From Date:</label>
-        <input type="date" @bind="CalendarStartDate" />
+        <DatetimePicker OnDatetimeChangeCallback="@StartDateChange" InitialDate="@CalendarStartDate"/>
         <label>To Date:</label>
-        <input type="date" @bind="CalendarEndDate" />
+        <DatetimePicker OnDatetimeChangeCallback="@EndDateChange" InitialDate="@CalendarEndDate"/>
     </span>
 </div>
 
@@ -44,9 +49,9 @@
                 </div>
             </div>
             <div class="card-body">
-                <h3 class="card-title"><a href="@($"/events/{calendarEvent.Id}")">@calendarEvent.Title</a></h3>
+                <h3 class="card-title"><a href="@($"/event/{calendarEvent.Unique_Id}")">@calendarEvent.Title</a></h3>
                 <div class="share">
-                    <button type="button" class="btn btn-info" onclick=@($"copyToClipboard(event, 'https://tngaz.org/events/{calendarEvent.Id}')")>Copy Link</button>
+                    <button type="button" class="btn btn-info" onclick=@($"copyToClipboard(event, 'https://www.fetwave.com/event/{calendarEvent.Unique_Id}')")>Copy Link</button>
                 </div>
                 <div class="eventDetails">
                     <h5><i class="bi bi-clock"></i>@($"Happening on {startTime?.DayOfWeek} {startTime:MM/dd/yyyy} at {startTime:hh:mm tt}")</h5>

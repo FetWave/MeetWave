@@ -3,6 +3,7 @@ using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using static FetWaveWWW.Pages.Events.DatetimePicker;
 using static FetWaveWWW.Pages.Events.RegionSelector;
 
 namespace FetWaveWWW.Pages.Events
@@ -49,7 +50,9 @@ namespace FetWaveWWW.Pages.Events
                 {
                     SelectedEvent = new CalendarEvent()
                     { 
-                        CreatedUserId = UserId.ToString()
+                        CreatedUserId = UserId.ToString(),
+                        StartDate = DateTime.Now,
+                        EndDate = DateTime.Now.AddHours(3),
                     };
                 }
             }
@@ -75,7 +78,17 @@ namespace FetWaveWWW.Pages.Events
         {
             SelectedEvent!.RegionId = int.Parse(args.region!);
         }
-        private async void SaveEvent()
+
+		private void StartDateChange(OnDatetimePickerChangeCallbackArgs args)
+		{
+			SelectedEvent!.StartDate = args.DateTime;
+		}
+
+		private void EndDateChange(OnDatetimePickerChangeCallbackArgs args)
+		{
+			SelectedEvent!.EndDate = args.DateTime;
+		}
+		private async void SaveEvent()
         {
             await Events.UpsertEvent(SelectedEvent!);
         }

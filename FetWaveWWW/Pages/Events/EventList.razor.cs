@@ -2,6 +2,7 @@
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using static FetWaveWWW.Pages.Events.DatetimePicker;
 using static FetWaveWWW.Pages.Events.RegionSelector;
 
 namespace FetWaveWWW.Pages.Events
@@ -41,8 +42,20 @@ namespace FetWaveWWW.Pages.Events
         
         private Guid? UserId { get; set; }
 
-        private DateTime CalendarStartDate { get; set; } = DateTime.Now.AddDays(-2).Date;
+        private DateTime CalendarStartDate { get; set; } = DateTime.Now.Date;
         private DateTime CalendarEndDate { get; set; } = DateTime.Now.AddMonths(1).Date;
+
+        private async Task StartDateChange(OnDatetimePickerChangeCallbackArgs args)
+        {
+            CalendarStartDate = args.DateTime;
+            StateHasChanged();
+        }
+
+        private async Task EndDateChange(OnDatetimePickerChangeCallbackArgs args)
+        {
+            CalendarEndDate = args.DateTime;
+            StateHasChanged();
+        }
 
         private IEnumerable<CalendarEvent>? CalendarEvents { get; set; }
 
