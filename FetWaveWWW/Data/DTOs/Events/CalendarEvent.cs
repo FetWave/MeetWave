@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FetWaveWWW.Helper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -33,6 +34,7 @@ namespace FetWaveWWW.Data.DTOs.Events
 
         //Event Info
         [Required(ErrorMessage = "Start Time is required to plan an event.")]
+        [BeforeEndDate(EndDatePropertyName = nameof(EndDate), ErrorMessage = "Start date must be before the end of the event")]
         public DateTime? StartDate { get; set; }
         [Required(ErrorMessage = "End Time is required to plan an event.")]
         public DateTime? EndDate { get; set; }
