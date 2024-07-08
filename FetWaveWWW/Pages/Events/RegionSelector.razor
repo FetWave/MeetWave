@@ -8,7 +8,7 @@
     Location
     <br />
     <span>
-        State Filter:
+        State:
         <select value="@StartStateValue" @onchange="OnStateSelectChange">
             <option value=""></option>
             @foreach (var state in States ?? [])
@@ -16,7 +16,7 @@
                 <option value="@state">@state</option>
             }
         </select>
-        Region Filter:
+        Region:
         <select value="@StartRegionValue" @onchange="OnRegionSelectChange">
             <option value=""></option>
             @if (!string.IsNullOrEmpty(StateCode) && (regionsForState ?? []).Count() > 1 && ShowAllRegion)
