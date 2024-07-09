@@ -45,10 +45,18 @@ namespace FetWaveWWW.Services
                         //Cache events from one month in the past until one year in the future
                         return await _context.Events
                         .Include(e => e.Region)
+                        .Include(e => e.Categories)
+                        .ThenInclude(c => c.Category)
+                        .Include(e => e.DressCodes)
+                        .ThenInclude(dc => dc.DressCode)
                         .Where(e => e.EndDate >= DateTime.UtcNow.AddMonths(-1) && e.StartDate <= DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
                     }) ?? []).Where(e => e.StartDate >= startTime && e.StartDate <= endTime).ToList()
                 : await _context.Events
                     .Include(e => e.Region)
+                    .Include(e => e.Categories)
+                    .ThenInclude(c => c.Category)
+                    .Include(e => e.DressCodes)
+                    .ThenInclude(dc => dc.DressCode)
                     .Where(e => e.EndDate > DateTime.UtcNow.AddMonths(-1) && e.StartDate < DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
 
         private async Task<Guid> AddEditEvent(CalendarEvent calendarEvent)

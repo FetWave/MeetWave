@@ -29,8 +29,6 @@ namespace FetWaveWWW.Data.DTOs.Events
         //Meta-data
         [Required(ErrorMessage = "Region is required to plan an event.")]
         public int? RegionId { get; set; }
-        public int? CategoryId { get; set; }
-        public int? DressCodeId { get; set; }
 
         //Event Info
         [Required(ErrorMessage = "Start Time is required to plan an event.")]
@@ -48,10 +46,8 @@ namespace FetWaveWWW.Data.DTOs.Events
 
         [ForeignKey(nameof(RegionId))]
         public virtual Region? Region { get; set; }
-        [ForeignKey(nameof(CategoryId))]
-        public virtual Category? Category { get; set; }
-        [ForeignKey(nameof(DressCodeId))]
-        public virtual DressCode? DressCode { get; set; }
+        public virtual ICollection<EventCategory> Categories { get; set; }
+        public virtual ICollection<EventDressCode> DressCodes { get; set; }
 
         [ForeignKey(nameof(CreatedUserId))]
         public virtual IdentityUser? CreatedUser { get; set; }
