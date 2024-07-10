@@ -1,5 +1,6 @@
 ﻿@page "/event/{eventGuid}"
 @using System.Web;
+@using System.Globalization
 @{
     var rsvpClasses = new Dictionary<string, List<string>>
     {
@@ -8,7 +9,7 @@
         {"MaybeGoing", new() { "btn-secondary", "btn-outline-secondary" }}
     };
     
-    
+    var ti = new CultureInfo("en-US", false).TextInfo;
 }
 
 @if(calendarEvent != null)
@@ -24,9 +25,14 @@
     <div class="card">
         <div class="card-header">
             <div class="form-inline">
+                @if (calendarEvent.CreatedUserId!.Equals(UserId.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    <button @onclick="GotoEditEvent">Edit</button>
+                }
             </div>
         </div>
         <div class="card-body">
+            <h3 class="card-title"><a href="@($"/event/{calendarEvent.Unique_Id}")">@calendarEvent.Title</a></h3>
             <div class="share">
                 <button type="button" class="btn btn-info" onclick=@($"copyToClipboard(event, 'https://www.fetwave.com/event/{calendarEvent.Unique_Id}')")>Copy Link</button>
             </div>
@@ -36,7 +42,15 @@
                 {
                     <h5><a href="https://www.google.com/maps/search/?api=1&query=@HttpUtility.UrlEncode(calendarEvent.Address)"><i class="bi bi-map"></i>@calendarEvent.Address</a></h5>
                 }
-                <p>@calendarEvent.Region?.Name, @calendarEvent.Region?.StateCode</p>
+                <p>@ti.ToTitleCase(calendarEvent.Region?.Name), @calendarEvent.Region?.StateCode</p>
+                @if (calendarEvent.Categories?.Any() ?? false)
+                {
+                    <p>Category: @(string.Join(", ", calendarEvent.Categories?.Select(d => d.Name) ?? []))</p>
+                }
+                @if (calendarEvent.DressCodes?.Any() ?? false)
+                {
+                    <p>Dress Code: @(string.Join(", ", calendarEvent.DressCodes?.Select(d => d.Name) ?? []))</p>
+                }
             </div>
             <p class="card-text">@calendarEvent.Description</p>
             <p>Going:</p>

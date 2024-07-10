@@ -1,5 +1,6 @@
 ﻿@page "/events/"
 @using System.Web;
+@using System.Globalization
 @{
     var rsvpClasses = new Dictionary<string, List<string>>
     {
@@ -7,6 +8,8 @@
         {"Going", new() { "btn-success", "btn-outline-success" } },
         {"MaybeGoing", new() { "btn-secondary", "btn-outline-secondary" }}
     };
+
+    var ti = new CultureInfo("en-US", false).TextInfo;
 }
 
 <HeadContent>
@@ -59,7 +62,7 @@
                     {
                         <h5><a href="https://www.google.com/maps/search/?api=1&query=@HttpUtility.UrlEncode(calendarEvent.Address)"><i class="bi bi-map"></i>@calendarEvent.Address</a></h5>
                     }
-                    <p>@calendarEvent.Region?.Name, @calendarEvent.Region?.StateCode</p>
+                    <p>@ti.ToTitleCase(calendarEvent.Region?.Name), @calendarEvent.Region?.StateCode</p>
                     @if(calendarEvent.Categories?.Any() ?? false)
                     {
                         <p>Category: @(string.Join(", ", calendarEvent.Categories?.Select(d => d.Name) ?? []))</p>
