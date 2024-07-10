@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\20240628190640_catToEventCat.Designer.cs" />
+    <Compile Remove="Migrations\20240709192704_makeCatsAndDCsManyToMany2.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +26,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
+    <PackageReference Include="Radzen.Blazor" Version="4.33.3" />
   </ItemGroup>
 
 </Project>

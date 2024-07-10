@@ -46,8 +46,8 @@ namespace FetWaveWWW.Data.DTOs.Events
 
         [ForeignKey(nameof(RegionId))]
         public virtual Region? Region { get; set; }
-        public virtual ICollection<EventCategory> Categories { get; set; }
-        public virtual ICollection<EventDressCode> DressCodes { get; set; }
+        public virtual ICollection<Category> Categories { get; set; }
+        public virtual ICollection<DressCode> DressCodes { get; set; }
 
         [ForeignKey(nameof(CreatedUserId))]
         public virtual IdentityUser? CreatedUser { get; set; }

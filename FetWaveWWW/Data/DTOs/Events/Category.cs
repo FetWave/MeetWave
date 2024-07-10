@@ -8,5 +8,6 @@ namespace FetWaveWWW.Data.DTOs.Events
         public int Id { get; set; }
         [Required]
         public string? Name { get; set; }
+        public virtual ICollection<CalendarEvent> Events { get; set; }
     }
 }
