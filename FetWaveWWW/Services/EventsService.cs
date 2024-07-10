@@ -53,7 +53,7 @@ namespace FetWaveWWW.Services
                     .Include(e => e.Region)
                     .Include(e => e.Categories)
                     .Include(e => e.DressCodes)
-                    .Where(e => e.EndDate > DateTime.UtcNow.AddMonths(-1) && e.StartDate < DateTime.UtcNow.AddYears(1) && e.RegionId == regionId).ToListAsync();
+                    .Where(e => e.StartDate >= startTime && e.StartDate <= endTime && e.RegionId == regionId).ToListAsync();
 
         private async Task<Guid> AddEditEvent(CalendarEvent calendarEvent)
         {
