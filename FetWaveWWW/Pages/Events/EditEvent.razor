@@ -33,10 +33,17 @@
                     </div>
                 </div>
                 <RegionSelector OnRegionChange="@SetRegionId" SelectedRegionId="@SelectedEvent!.RegionId"/>
-                <div class="form-group">
-                    <label>Address:</label>
-                    <input type="text" class="form-control" @bind="SelectedEvent!.Address" />
-                </div>
+                @if(SelectedEvent.RegionId.HasValue && SelectedEvent.RegionId != Events.GetRegions().Result?.FirstOrDefault(r => r.StateCode.Equals("Online", StringComparison.OrdinalIgnoreCase))?.Id)
+                {
+                    <div class="form-group">
+                        <label>Address:</label>
+                        <input type="text" class="form-control" @bind="SelectedEvent!.Address" />
+                    </div>
+                }
+                <RadzenDropDown @bind-Value="CategoryValues" Data=@Categories TextProperty="Name" ValueProperty="Id" Name="DropDownCategories"
+                        Multiple=true AllowClear=true Placeholder="Select categories" Chips=true Style="width: 100%; max-width: 400px;" />
+                <RadzenDropDown @bind-Value="DressCodeValues" Data=@DressCodes TextProperty="Name" ValueProperty="Id" Name="DropDownDressCodes"
+                        Multiple=true AllowClear=true Placeholder="Select dress codes" Chips=true Style="width: 100%; max-width: 400px;" />
                 <button type="submit">Submit</button>
             </EditForm>
         </div>

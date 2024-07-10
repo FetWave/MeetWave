@@ -4,6 +4,7 @@ using Ixnas.AltchaNet;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Radzen;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("FetWaveWWWContextConnection") ?? throw new InvalidOperationException("Connection string 'FetWaveWWWContextConnection' not found.");
 
@@ -17,6 +18,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMemoryCache();
 
+builder.Services.AddRadzenComponents();
 
 builder.Services.AddSingleton<AltchaPageService>();
 builder.Services.AddSingleton<IAltchaChallengeStore, AltchaCache>();

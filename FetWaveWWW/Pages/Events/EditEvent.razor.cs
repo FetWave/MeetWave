@@ -3,6 +3,7 @@ using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Identity.UI;
 using static FetWaveWWW.Pages.Events.DatetimePicker;
 using static FetWaveWWW.Pages.Events.RegionSelector;
 
@@ -14,12 +15,15 @@ namespace FetWaveWWW.Pages.Events
         [Parameter]
         public string? eventGuid { get; set; }
 
+#nullable disable
+
         [Inject]
         public EventsService Events { get; set; }
         [Inject]
         public AuthHelperService Auth { get; set; }
         [Inject]
         private NavigationManager Navigation { get; set; }
+#nullable enable
 
         protected override async Task OnInitializedAsync()
         {
@@ -64,6 +68,12 @@ namespace FetWaveWWW.Pages.Events
             editContext = new EditContext(SelectedEvent);
 
             messageStore = new(editContext);
+
+            DressCodes = await Events.GetDressCodes();
+            Categories = await Events.GetCategories();
+
+            DressCodeValues = SelectedEvent.DressCodes?.Select(d => d.Id) ?? [];
+            CategoryValues = SelectedEvent.Categories?.Select(d => d.Id) ?? [];
         }
 
         private Guid UserId { get; set; }
@@ -72,6 +82,11 @@ namespace FetWaveWWW.Pages.Events
 
         private EditContext? editContext;
         private ValidationMessageStore? messageStore;
+
+        private IEnumerable<DressCode>? DressCodes { get; set; }
+        private IEnumerable<int> DressCodeValues { get; set; } = [];
+        private IEnumerable<Category>? Categories { get; set; }
+        private IEnumerable<int> CategoryValues { get; set; } = [];
 
 
         private async void SetRegionId(OnRegionChangeCallbackArgs args)
@@ -90,7 +105,16 @@ namespace FetWaveWWW.Pages.Events
 		}
 		private async void SaveEvent()
         {
-            await Events.UpsertEvent(SelectedEvent!);
+            if (SelectedEvent!.Id > 0)
+            {
+                SelectedEvent.UpdatedTS = DateTime.UtcNow;
+                SelectedEvent.UpdatedUserId = UserId.ToString();
+            }
+
+            SelectedEvent.DressCodes = DressCodes?.Where(d => DressCodeValues.Contains(d.Id)).ToList() ?? [];
+            SelectedEvent.Categories = Categories?.Where(c => CategoryValues.Contains(c.Id)).ToList() ?? [];
+            var eventGuid = await Events.UpsertEvent(SelectedEvent);
+            Navigation.NavigateTo($"/event/{eventGuid}");
         }
     }
 }
