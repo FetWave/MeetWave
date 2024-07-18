@@ -25,7 +25,7 @@ namespace FetWaveWWW.Helper
                  {
                      var profileId = e.User.Id;
                      var profileName = HttpUtility.HtmlEncode(e.User.UserName);
-                     return $"<a href='/member/{profileId}'><span class='badge badge-pill badge-primary'><i class='bi bi-person'></i>{profileName}</span></a>";
+                     return $"<a href='/member/{profileId}'><span class='badge rounded-pill bg-primary'><i class='bi bi-person'></i>{profileName}</span></a>";
                  });
             return string.Join(" ", members);
         }
