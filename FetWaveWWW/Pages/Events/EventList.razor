@@ -1,12 +1,13 @@
 ﻿@page "/events/"
 @using System.Web;
 @using System.Globalization
+@using FetWaveWWW.Helper
 @{
     var rsvpClasses = new Dictionary<string, List<string>>
     {
         {"NA", new() { "btn-primary", "btn-outline-primary" } },
         {"Going", new() { "btn-success", "btn-outline-success" } },
-        {"MaybeGoing", new() { "btn-secondary", "btn-outline-secondary" }}
+        {"Interested", new() { "btn-secondary", "btn-outline-secondary" }}
     };
 
     var ti = new CultureInfo("en-US", false).TextInfo;
@@ -41,20 +42,27 @@
     @foreach(var calendarEvent in CalendarEvents ?? [])
     {
         var startTime = calendarEvent.StartDate;
-
+        (EventRsvps ?? []).TryGetValue(calendarEvent.Id, out var rsvps);
+        var rsvpCount = rsvps?.Count(r => r.DeletedTS == null);
+        var userRsvp = rsvps?.FirstOrDefault(r => r.UserId == UserId.ToString());
+        var rsvpStatus = userRsvp?.State;
+        var rsvpDeleted = userRsvp == null || userRsvp.DeletedTS != null;
         <div class="card">
             <div class="card-header">
                 <div class="form-inline">
+                    <button type="button" @onclick=@(async () => await UpdateRsvp(null, userRsvp, calendarEvent.Id)) class="btn @(rsvpDeleted ? rsvpClasses["NA"][0] : rsvpClasses["NA"][1])">N/A</button>
+                    <button type="button" @onclick=@(async () => await UpdateRsvp(RsvpStateEnum.Going, userRsvp, calendarEvent.Id)) class="btn @(!rsvpDeleted && (rsvpStatus?.Name?.Equals(Helper.RsvpStateEnum.Going.ToString(), StringComparison.OrdinalIgnoreCase) ?? false) ? rsvpClasses["Going"][0] : rsvpClasses["Going"][1])">Going</button>
+                    <button type="button" @onclick=@(async () => await UpdateRsvp(RsvpStateEnum.Interested, userRsvp, calendarEvent.Id)) class="btn @(!rsvpDeleted && (rsvpStatus?.Name?.Equals(Helper.RsvpStateEnum.Interested.ToString(), StringComparison.OrdinalIgnoreCase) ?? false) ? rsvpClasses["Interested"][0] : rsvpClasses["Interested"][1])">Interested</button>
                     @if (calendarEvent.CreatedUserId!.Equals(UserId.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        <button @onclick="(() => GotoEditEvent(calendarEvent.Unique_Id.ToString()))">Edit</button>
+                        <button @onclick="(() => GotoEditEvent(calendarEvent.UniqueId.ToString()))">Edit</button>
                     }
                 </div>
             </div>
             <div class="card-body">
-                <h3 class="card-title"><a href="@($"/event/{calendarEvent.Unique_Id}")">@calendarEvent.Title</a></h3>
+                <h3 class="card-title"><a href="@($"/event/{calendarEvent.UniqueId}")">@calendarEvent.Title</a></h3>
                 <div class="share">
-                    <button type="button" class="btn btn-info" onclick=@($"copyToClipboard(event, 'https://www.fetwave.com/event/{calendarEvent.Unique_Id}')")>Copy Link</button>
+                    <button type="button" class="btn btn-info" onclick=@($"copyToClipboard(event, 'https://www.fetwave.com/event/{calendarEvent.UniqueId}')")>Copy Link</button>
                 </div>
                 <div class="eventDetails">
                     <h5><i class="bi bi-clock"></i>@($"Happening on {startTime?.DayOfWeek} {startTime:MM/dd/yyyy} at {startTime:hh:mm tt}")</h5>
@@ -80,6 +88,7 @@
                 }        
                 @displayDescription
                 </p>
+                <p>RSVP Count : @rsvpCount</p>
             </div>
         </div>
     <br/>        

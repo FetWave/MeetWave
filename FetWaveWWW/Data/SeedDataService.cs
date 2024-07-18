@@ -16,6 +16,7 @@ namespace FetWaveWWW.Data
             await SeedCategories();
             await SeedDressCodes();
             await SeedRegions();
+            await SeedRSVPStates();
         }
 
         private async Task SeedCategories()
@@ -62,6 +63,21 @@ namespace FetWaveWWW.Data
             if (newRegions?.Any() ?? false)
             {
                 await _context.Regions.AddRangeAsync(newRegions);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task SeedRSVPStates()
+        {
+            using var sr = new StreamReader("Data/SEED/RSVPStates.json");
+            var states = JsonSerializer.Deserialize<IEnumerable<RSVPState>>(await sr.ReadToEndAsync());
+
+            var existingstates = _context.RSVPStates.Select(c => c.Name).ToList();
+
+            var newStates = states?.Where(c => !existingstates.Any(e => e.Equals(c.Name, StringComparison.OrdinalIgnoreCase)));
+            if (newStates?.Any() ?? false)
+            {
+                await _context.RSVPStates.AddRangeAsync(newStates);
                 await _context.SaveChangesAsync();
             }
         }

@@ -16,6 +16,8 @@ public class FetWaveWWWContext : IdentityDbContext<IdentityUser>
     public DbSet<Category> Categories { get; set; }
     public DbSet<DressCode> DressCodes { get; set; }
     public DbSet<Region> Regions { get; set; }
+    public DbSet<EventRSVP> RSVPs { get; set; }
+    public DbSet<RSVPState> RSVPStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

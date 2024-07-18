@@ -1,7 +1,10 @@
 ﻿using FetWaveWWW.Data.DTOs.Events;
+using FetWaveWWW.Helper;
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.ComponentModel.DataAnnotations;
 using static FetWaveWWW.Pages.Events.DatetimePicker;
 using static FetWaveWWW.Pages.Events.RegionSelector;
 
@@ -31,13 +34,43 @@ namespace FetWaveWWW.Pages.Events
 
         private int? RegionId { get; set; }
         private string? StateCode { get; set; }
+        private bool? AllRegionsForState { get; set; }
 
         public async void GetEventsForRegion(OnRegionChangeCallbackArgs args)
         {
-            CalendarEvents = (args.region?.Equals("all", StringComparison.OrdinalIgnoreCase) ?? false) && !string.IsNullOrEmpty(args.state)
-                ? await Events.GetEventsForState(CalendarStartDate, CalendarEndDate, args.state)
-                : await Events.GetEventsForRegion(CalendarStartDate, CalendarEndDate, int.TryParse(args.region, out var regionId) ? regionId : throw new Exception("Invalid region selection"));
-            StateHasChanged();
+            if ((args.region?.Equals("all", StringComparison.OrdinalIgnoreCase) ?? false) && !string.IsNullOrEmpty(args.state))
+            {
+                AllRegionsForState = true;
+                StateCode = args.state;
+            }
+            else
+            {
+                AllRegionsForState = false;
+                StateCode = null;
+                if (int.TryParse(args.region, out var regionId))
+                    RegionId = regionId;
+            }
+            await UpdateCalendarEvents();
+        }
+
+        private async Task UpdateCalendarEvents()
+        {
+            if (!string.IsNullOrEmpty(StateCode) || RegionId.HasValue)
+            {
+
+                CalendarEvents = (AllRegionsForState ?? false) && !string.IsNullOrEmpty(StateCode)
+                    ? await Events.GetEventsForState(CalendarStartDate, CalendarEndDate, StateCode)
+                    : await Events.GetEventsForRegion(CalendarStartDate, CalendarEndDate, RegionId ?? throw new Exception("Invalid region selection"));
+
+                EventRsvps = [];
+                foreach(var e in CalendarEvents ?? [])
+                {
+                    EventRsvps[e.Id] = await Events.GetRSVPsForEvent(e.Id) ?? [];
+                }
+
+                StateHasChanged();
+            }
+
         }
         
         private Guid? UserId { get; set; }
@@ -48,16 +81,40 @@ namespace FetWaveWWW.Pages.Events
         private async Task StartDateChange(OnDatetimePickerChangeCallbackArgs args)
         {
             CalendarStartDate = args.DateTime;
-            StateHasChanged();
+            await UpdateCalendarEvents();
         }
 
         private async Task EndDateChange(OnDatetimePickerChangeCallbackArgs args)
         {
             CalendarEndDate = args.DateTime;
-            StateHasChanged();
+            await UpdateCalendarEvents();
         }
 
         private IEnumerable<CalendarEvent>? CalendarEvents { get; set; }
+        private Dictionary<int,IEnumerable<EventRSVP>>? EventRsvps { get; set; }
+
+        private async Task UpdateRsvp(RsvpStateEnum? state, EventRSVP? rsvp, int? eventId)
+        {
+            if (state == null && rsvp != null)
+            {
+                await RSVPHelper.RemoveRSVP(Events, rsvp, UserId.ToString()!);
+            }
+            else if (state == RsvpStateEnum.Going)
+            {
+                await RSVPHelper.RSVPGoing(Events, rsvp, eventId, UserId.ToString());
+            }
+            else if (state == RsvpStateEnum.Interested)
+            {
+                await RSVPHelper.RSVPInterested(Events, rsvp, eventId, UserId.ToString());
+            }
+            else
+            {
+                //log error
+            }
+            
+            EventRsvps[rsvp.EventId.Value] = await Events.GetRSVPsForEvent(rsvp.EventId.Value) ?? [];
+            StateHasChanged();
+        }
 
         private void NavCreateEvent()
         {
