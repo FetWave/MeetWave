@@ -1,7 +1,5 @@
 ﻿using Ixnas.AltchaNet;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
-using NuGet.Protocol;
 using System.Security.Cryptography;
 using System.Text.Json;
 
@@ -10,7 +8,7 @@ namespace FetWaveWWW.Services
     internal class AltchaCache : IAltchaChallengeStore
     {
         private readonly IMemoryCache _cache;
-        public AltchaCache(IMemoryCache cache) 
+        public AltchaCache(IMemoryCache cache)
         {
             _cache = cache;
         }
@@ -36,7 +34,8 @@ namespace FetWaveWWW.Services
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         };
-        public AltchaPageService(IAltchaChallengeStore cache) {
+        public AltchaPageService(IAltchaChallengeStore cache)
+        {
 
             var key = new byte[64];
             using (var rng = RandomNumberGenerator.Create())

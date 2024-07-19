@@ -7,7 +7,6 @@ using Google.Apis.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FetWaveWWW.Services
 {
@@ -19,7 +18,7 @@ namespace FetWaveWWW.Services
 
         public GoogleServices(IConfiguration Configuration, IMemoryCache memoryCache)
         {
-            cache= memoryCache;
+            cache = memoryCache;
 
             string[] Scopes = [CalendarService.Scope.Calendar, GmailService.Scope.GmailSend, GmailService.Scope.MailGoogleCom];
 
@@ -61,7 +60,7 @@ namespace FetWaveWWW.Services
                 var batchEmails = emails.Skip(i).Take(100);
                 await Gmail.Users.Messages.Send(new Message { Raw = GetEmailBccRaw(string.Join(", ", batchEmails), subject, body) }, "me").ExecuteAsync();
             }
-            
+
         }
 
         private HashSet<string> cacheKeys = [];
@@ -86,7 +85,7 @@ namespace FetWaveWWW.Services
 
         public void ClearEventCache()
         {
-            foreach(var key in cacheKeys)
+            foreach (var key in cacheKeys)
             {
                 cache.Remove(key);
             }

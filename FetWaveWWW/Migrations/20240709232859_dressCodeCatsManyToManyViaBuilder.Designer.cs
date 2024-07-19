@@ -4,6 +4,7 @@ using FetWaveWWW.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FetWaveWWW.Migrations
 {
     [DbContext(typeof(FetWaveWWWContext))]
-    partial class FetWaveWWWContextModelSnapshot : ModelSnapshot
+    [Migration("20240709232859_dressCodeCatsManyToManyViaBuilder")]
+    partial class dressCodeCatsManyToManyViaBuilder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,7 +99,7 @@ namespace FetWaveWWW.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UniqueId")
+                    b.Property<Guid>("Unique_Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedTS")
@@ -111,7 +114,7 @@ namespace FetWaveWWW.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.HasIndex("UniqueId")
+                    b.HasIndex("Unique_Id")
                         .IsUnique();
 
                     b.HasIndex("UpdatedUserId");
@@ -156,76 +159,6 @@ namespace FetWaveWWW.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DressCodes");
-                });
-
-            modelBuilder.Entity("FetWaveWWW.Data.DTOs.Events.EventRSVP", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedTS")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("DeletedTS")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("Private")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("RSVPStateId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UniqueId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedTS")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedUserId");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("RSVPStateId");
-
-                    b.HasIndex("UpdatedUserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RSVPs");
-                });
-
-            modelBuilder.Entity("FetWaveWWW.Data.DTOs.Events.RSVPState", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RSVPStates");
                 });
 
             modelBuilder.Entity("FetWaveWWW.Data.DTOs.Events.Region", b =>
@@ -506,41 +439,6 @@ namespace FetWaveWWW.Migrations
                     b.Navigation("Region");
 
                     b.Navigation("UpdatedUser");
-                });
-
-            modelBuilder.Entity("FetWaveWWW.Data.DTOs.Events.EventRSVP", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "CreatedUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FetWaveWWW.Data.DTOs.Events.CalendarEvent", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId");
-
-                    b.HasOne("FetWaveWWW.Data.DTOs.Events.RSVPState", "State")
-                        .WithMany()
-                        .HasForeignKey("RSVPStateId");
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "UpdatedUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedUserId");
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("CreatedUser");
-
-                    b.Navigation("Event");
-
-                    b.Navigation("State");
-
-                    b.Navigation("UpdatedUser");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

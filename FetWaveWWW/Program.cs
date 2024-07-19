@@ -1,9 +1,10 @@
-using Microsoft.EntityFrameworkCore;
+using FetWaveWWW.Data;
 using FetWaveWWW.Services;
 using Ixnas.AltchaNet;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using FetWaveWWW.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
+using Radzen;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("FetWaveWWWContextConnection") ?? throw new InvalidOperationException("Connection string 'FetWaveWWWContextConnection' not found.");
 
@@ -15,13 +16,20 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddMemoryCache();
 
+builder.Services.AddRadzenComponents();
 
 builder.Services.AddSingleton<AltchaPageService>();
 builder.Services.AddSingleton<IAltchaChallengeStore, AltchaCache>();
 
 builder.Services.AddSingleton<GoogleServices>();
 builder.Services.AddSingleton<IEmailSender, GoogleServices>();
+
+builder.Services.AddScoped<SeedDataService>();
+
+builder.Services.AddScoped<EventsService>();
+builder.Services.AddScoped<AuthHelperService>();
 
 builder.Services.AddAuthentication()
     .AddGoogle(googleOptions =>
@@ -53,5 +61,10 @@ app.UseRouting();
 app.UseAuthorization();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+//Data Seeding Scope
+using var scope = app.Services.CreateScope();
+var seedService = scope.ServiceProvider.GetService<SeedDataService>();
+await seedService?.SeedEventInfra();
 
 app.Run();
