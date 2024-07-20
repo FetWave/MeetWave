@@ -20,7 +20,7 @@ namespace FetWaveWWW.Services
         {
             cache = memoryCache;
 
-            string[] Scopes = [CalendarService.Scope.Calendar, GmailService.Scope.GmailSend, GmailService.Scope.MailGoogleCom];
+            string[] Scopes = [ GmailService.Scope.MailGoogleCom];
 
             ServiceAccountCredential? credential;
 
@@ -28,13 +28,13 @@ namespace FetWaveWWW.Services
             var confg = Google.Apis.Json.NewtonsoftJsonSerializer.Instance.Deserialize<JsonCredentialParameters>(stream);
             credential = GoogleCredential.FromJsonParameters(confg)
                 .CreateScoped(Scopes)
-                .CreateWithUser("board@tngaz.org")
+                .CreateWithUser("noreply@fetwave.com")
                 .UnderlyingCredential as ServiceAccountCredential;
 
             var baseClient = new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
-                ApplicationName = "TNG WWW Calendar Integration",
+                ApplicationName = "FetwaveWWW",
             };
 
             Calendar = new CalendarService(baseClient);
@@ -50,7 +50,7 @@ namespace FetWaveWWW.Services
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            await Gmail.Users.Messages.Send(new Message { Raw = GetEmailRaw(email, subject, htmlMessage) }, "me").ExecuteAsync();
+            Gmail.Users.Messages.Send(new Message { Raw = GetEmailRaw(email, subject, htmlMessage) }, "me").Execute();
         }
 
         public async Task EmailListAsync(IEnumerable<string> emails, string subject, string body)
@@ -61,35 +61,6 @@ namespace FetWaveWWW.Services
                 await Gmail.Users.Messages.Send(new Message { Raw = GetEmailBccRaw(string.Join(", ", batchEmails), subject, body) }, "me").ExecuteAsync();
             }
 
-        }
-
-        private HashSet<string> cacheKeys = [];
-
-        public async Task<Event?> GetEvent(string calendarId, string eventId)
-        {
-            try
-            {
-                var key = $"event:{calendarId}:{eventId}";
-                if (cache.TryGetValue(key, out Event? cachedEvent))
-                {
-                    return cachedEvent;
-                }
-                var newEvent = await Calendar.Events.Get(calendarId, eventId).ExecuteAsync();
-                cache.Set(key, newEvent);
-                cacheKeys.Add(key);
-                return newEvent;
-            }
-            catch { }
-            return null;
-        }
-
-        public void ClearEventCache()
-        {
-            foreach (var key in cacheKeys)
-            {
-                cache.Remove(key);
-            }
-            cacheKeys = [];
         }
     }
 }
