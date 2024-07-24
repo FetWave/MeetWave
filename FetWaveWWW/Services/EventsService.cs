@@ -90,7 +90,18 @@ namespace FetWaveWWW.Services
 
         private async Task<Guid> AddEditEvent(CalendarEvent calendarEvent)
         {
-            _context.Entry(calendarEvent).State = EntityState.Detached;
+            var local = _context.Set<CalendarEvent>()
+                .Local
+                .FirstOrDefault(entry => entry.Id.Equals(calendarEvent.Id));
+
+            // check if local is not null 
+            if (local != null)
+            {
+                // detach
+                _context.Entry(local).State = EntityState.Detached;
+            }
+
+
             if (calendarEvent.Id == 0)
             {
                 _context.Add(calendarEvent);
