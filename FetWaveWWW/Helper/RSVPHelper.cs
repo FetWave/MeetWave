@@ -23,6 +23,7 @@ namespace FetWaveWWW.Helper
             else
             {
                 rsvp.RSVPStateId = rsvpState?.Id;
+                rsvp.State = rsvpState;
                 rsvp.UpdatedTS = DateTime.UtcNow;
                 rsvp.UpdatedUserId = userId;
                 rsvp.DeletedTS = null;

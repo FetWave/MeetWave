@@ -111,8 +111,8 @@ namespace FetWaveWWW.Pages.Events
             {
                 //log error
             }
-            
-            EventRsvps[rsvp.EventId.Value] = await Events.GetRSVPsForEvent(rsvp.EventId.Value) ?? [];
+            eventId ??= rsvp?.EventId;
+            EventRsvps[eventId.Value] = await Events.GetRSVPsForEvent(eventId.Value) ?? [];
             StateHasChanged();
         }
 

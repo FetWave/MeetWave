@@ -24,7 +24,6 @@ namespace FetWaveWWW.Services
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(12);
                 return await _context.Regions
-                    .AsNoTracking()
                     .ToListAsync();
             });
 
@@ -33,7 +32,6 @@ namespace FetWaveWWW.Services
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(12);
                 return await _context.DressCodes
-                    .AsNoTracking()
                     .ToListAsync();
             });
 
@@ -42,7 +40,6 @@ namespace FetWaveWWW.Services
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(12);
                 return await _context.Categories
-                    .AsNoTracking()
                     .ToListAsync();
             });
 
@@ -51,7 +48,6 @@ namespace FetWaveWWW.Services
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(12);
                 return await _context.RSVPStates
-                    .AsNoTracking()
                     .ToListAsync();
             });
 
@@ -65,14 +61,12 @@ namespace FetWaveWWW.Services
                         .Include(e => e.Region)
                         .Include(e => e.Categories)
                         .Include(e => e.DressCodes)
-                        .AsNoTracking()
                         .Where(e => e.EndDate >= DateTime.UtcNow.AddMonths(-1) && e.StartDate <= DateTime.UtcNow.AddYears(1) && e.RegionId == regionId && e.DeletedTS == null).ToListAsync();
                     }) ?? []).Where(e => e.StartDate >= startTime && e.StartDate <= endTime).ToList()
                 : await _context.Events
                     .Include(e => e.Region)
                     .Include(e => e.Categories)
                     .Include(e => e.DressCodes)
-                    .AsNoTracking()
                     .Where(e => e.StartDate >= startTime && e.StartDate <= endTime && e.RegionId == regionId && e.DeletedTS == null).ToListAsync();
 
         private async Task<IList<EventRSVP>?> GetCachedRSVPs(int eventId)
@@ -81,7 +75,6 @@ namespace FetWaveWWW.Services
                     entry.AbsoluteExpiration = DateTime.UtcNow.AddSeconds(30);
                     
                     return await _context.RSVPs
-                        .AsNoTracking()
                         .Include(r => r.User)
                         .Include(r => r.State)
                         .Where(r => r.EventId == eventId)
@@ -90,18 +83,6 @@ namespace FetWaveWWW.Services
 
         private async Task<Guid> AddEditEvent(CalendarEvent calendarEvent)
         {
-            var local = _context.Set<CalendarEvent>()
-                .Local
-                .FirstOrDefault(entry => entry.Id.Equals(calendarEvent.Id));
-
-            // check if local is not null 
-            if (local != null)
-            {
-                // detach
-                _context.Entry(local).State = EntityState.Detached;
-            }
-
-
             if (calendarEvent.Id == 0)
             {
                 _context.Add(calendarEvent);
@@ -120,15 +101,26 @@ namespace FetWaveWWW.Services
 
         private async Task<int?> AddEditRSVP(EventRSVP rsvp)
         {
-            var local = _context.Set<EventRSVP>()
+            var localEvent = _context.Set<CalendarEvent>()
                 .Local
-                .FirstOrDefault(entry => entry.Id.Equals(rsvp.Id));
+                .FirstOrDefault(entry => entry.Id.Equals(rsvp.Event?.Id));
 
             // check if local is not null 
-            if (local != null)
+            if (localEvent != null)
             {
                 // detach
-                _context.Entry(local).State = EntityState.Detached;
+                _context.Entry(localEvent).State = EntityState.Detached;
+            }
+
+            var localRegion = _context.Set<Region>()
+                .Local
+                .FirstOrDefault(entry => entry.Id.Equals(rsvp.Event?.Region?.Id));
+
+            // check if local is not null 
+            if (localRegion != null)
+            {
+                // detach
+                _context.Entry(localRegion).State = EntityState.Detached;
             }
 
             if (rsvp.Id == 0)
@@ -137,11 +129,6 @@ namespace FetWaveWWW.Services
             }
             else
             {
-                rsvp.Event = null;
-                rsvp.User = null;
-                rsvp.State = null;
-                rsvp.CreatedUser = null;
-                rsvp.UpdatedUser = null;
                 _context.Attach(rsvp);
                 _context.Entry(rsvp).State = EntityState.Modified;
             }
