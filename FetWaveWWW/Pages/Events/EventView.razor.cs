@@ -73,7 +73,9 @@ namespace FetWaveWWW.Pages.Events
             {
                 //log error
             }
-            UserRsvp = (await Events.GetRSVPsForEvent(calendarEvent.Id) ?? []).FirstOrDefault(r => r.UserId == UserId.ToString());
+            UserRsvp = (await Events.GetRSVPsForEvent(calendarEvent!.Id) ?? []).FirstOrDefault(r => r.UserId == UserId.ToString());
+            GoingHTML = await HtmlHelper.GetRsvpMemberList(Events, calendarEvent.Id, calendarEvent.CreatedUserId == UserId.ToString(), RsvpStateEnum.Going);
+            InterestedHTML = await HtmlHelper.GetRsvpMemberList(Events, calendarEvent.Id, calendarEvent.CreatedUserId == UserId.ToString(), RsvpStateEnum.Interested);
             StateHasChanged();
         }
 
