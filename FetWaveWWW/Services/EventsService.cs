@@ -83,6 +83,32 @@ namespace FetWaveWWW.Services
 
         private async Task<Guid> AddEditEvent(CalendarEvent calendarEvent)
         {
+            var localDressCodes = _context.Set<DressCode>()
+                .Local
+                .Where(d => calendarEvent.DressCodes?.Any(dc => dc.Id == d.Id) ?? false);
+
+            // check if local is not null 
+            if (localDressCodes?.Any() ?? false)
+            {
+                foreach (var entity in localDressCodes)
+                {
+                    _context.Entry(entity).State = EntityState.Unchanged;
+                }
+            }
+
+            var localCategories = _context.Set<Category>()
+                .Local
+                .Where(c => calendarEvent.Categories?.Any(cg => cg.Id == c.Id) ?? false);
+
+            // check if local is not null 
+            if (localCategories?.Any() ?? false)
+            {
+                foreach (var entity in localCategories)
+                {
+                    _context.Entry(entity).State = EntityState.Unchanged;
+                }
+            }
+
             if (calendarEvent.Id == 0)
             {
                 _context.Add(calendarEvent);
