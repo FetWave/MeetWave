@@ -81,7 +81,7 @@ namespace FetWaveWWW.Pages.Events
 
         private void GotoEditEvent()
         {
-            Navigation.NavigateTo($"/event/edit/{eventGuid}");
+            Navigation.NavigateTo($"/event/manage/{eventGuid}");
         }
     }
 }

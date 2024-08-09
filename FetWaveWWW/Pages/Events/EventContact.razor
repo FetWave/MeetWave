@@ -1,0 +1,65 @@
+﻿@page "/event/rsvps/{eventGuid}"
+@using FetWaveWWW.Helper
+
+@{
+    var action = string.IsNullOrEmpty(eventGuid)
+        ? "New"
+        : "Edit";
+}
+
+@if (SelectedEvent != null)
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <h3>@SelectedEvent.Title</h3>
+                <p>@SelectedEvent.Description</p>
+                <label>Starts At:</label>
+                <div>
+                    <DatetimePicker InitialDate="@SelectedEvent.StartDate!.Value" />
+                </div>
+                <label>Ends At:</label>
+                <div>
+                    <DatetimePicker InitialDate="@SelectedEvent.EndDate!.Value" />
+                </div>
+                <RegionSelector SelectedRegionId="@SelectedEvent.RegionId" />
+                <div class="form-group">
+                    <label>Address:</label>
+                    <input type="text" class="form-control" @bind="SelectedEvent!.Address" readonly />
+                </div>
+                <RadzenDropDown @bind-Value="CategoryValues" Data=@Categories TextProperty="Name" ValueProperty="Id" Name="DropDownCategories"
+                                Multiple=true AllowClear=true Placeholder="Select categories" Chips=true Style="width: 100%; max-width: 400px;" />
+                <RadzenDropDown @bind-Value="DressCodeValues" Data=@DressCodes TextProperty="Name" ValueProperty="Id" Name="DropDownDressCodes"
+                                Multiple=true AllowClear=true Placeholder="Select dress codes" Chips=true Style="width: 100%; max-width: 400px;" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+            @foreach (var r in RSVPs??[])
+            {
+                <RadzenCheckBox @bind-Value=@SelectedRSVPs![r.Id] Name=@($"CheckBox{r.Id}") />
+                <RadzenLabel Text="@r.User.UserName" Component=@($"CheckBox{r.Id}") class="rz-ms-2" />
+                if (r.ApprovedTS is not null)
+                {
+                    <p>Approved - @r.ApprovedTS.Value.ToString("yyyy-MM-dd hh:mm tt")</p>
+                }
+            }
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <input type="radio" name="emailList" value="@EmailListEnum.All" checked="@(EmailList?.Equals(EmailListEnum.All))" @onchange="EmailListOnChange" />
+                <label>All</label>
+                <br />
+                <input type="radio" name="emailList" value="@EmailListEnum.Approved" checked="@(EmailList?.Equals(EmailListEnum.Approved))" @onchange="EmailListOnChange" />
+                <label>Approved</label>
+                <br />
+                <input type="radio" name="emailList" value="@EmailListEnum.Selected" checked="@(EmailList?.Equals(EmailListEnum.Selected))" @onchange="EmailListOnChange" />
+                <label>Selected</label>
+                <br />
+                <label>Subject:</label><input type="text" @bind=@EmailSubject>
+
+                <RadzenHtmlEditor @bind-Value=@EmailBody style="height: 300px;"/>
+                <button type="button">Send Email</button>
+            </div>
+        </div>
+    </div>
+}

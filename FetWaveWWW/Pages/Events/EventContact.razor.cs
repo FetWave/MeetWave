@@ -1,17 +1,14 @@
 ﻿using FetWaveWWW.Data.DTOs.Events;
+using FetWaveWWW.Helper;
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Identity.UI;
-using System.Runtime.CompilerServices;
-using static FetWaveWWW.Pages.Events.DatetimePicker;
-using static FetWaveWWW.Pages.Events.RegionSelector;
+using Microsoft.Extensions.Logging;
 
 namespace FetWaveWWW.Pages.Events
 {
     [Authorize]
-    public partial class EditEvent : ComponentBase
+    public partial class EventContact : ComponentBase
     {
         [Parameter]
         public string? eventGuid { get; set; }
@@ -64,12 +61,7 @@ namespace FetWaveWWW.Pages.Events
                 }
                 else
                 {
-                    SelectedEvent = new CalendarEvent()
-                    { 
-                        CreatedUserId = UserId.ToString(),
-                        StartDate = DateTime.Now,
-                        EndDate = DateTime.Now.AddHours(3),
-                    };
+                    Navigation.NavigateTo("/events");
                 }
             }
             else
@@ -79,55 +71,39 @@ namespace FetWaveWWW.Pages.Events
 
             if (SelectedEvent != null)
             {
-                editContext = new EditContext(SelectedEvent);
-                messageStore = new(editContext);
-
-                DressCodeValues = SelectedEvent.DressCodes?.Select(d => d.Id) ?? [];
-                CategoryValues = SelectedEvent.Categories?.Select(d => d.Id) ?? [];
+                RSVPs = await Events.GetRSVPsForEvent(SelectedEvent.Id);
+                SelectedRSVPs = RSVPs?.Select(r => r.Id).ToDictionary(x => x!, _ => false) ?? [];
             }
+
             DressCodes = await Events.GetDressCodes();
             Categories = await Events.GetCategories();
+
+            DressCodeValues = SelectedEvent!.DressCodes?.Select(d => d.Id) ?? [];
+            CategoryValues = SelectedEvent.Categories?.Select(d => d.Id) ?? [];
         }
+
+        private Dictionary<int, bool>? SelectedRSVPs { get; set; }
+
+        private EmailListEnum? EmailList { get; set; }
+
+        private void EmailListOnChange(ChangeEventArgs args)
+        {
+            EmailList = Enum.TryParse<EmailListEnum>(args.Value?.ToString(), out var value) ? value : null;
+        }
+
+        private string EmailSubject { get; set; } = string.Empty;
+        private string EmailBody { get; set; } = string.Empty;
 
         private Guid UserId { get; set; }
 
         private CalendarEvent? SelectedEvent { get; set; }
 
-        private EditContext? editContext;
-        private ValidationMessageStore? messageStore;
+        private IEnumerable<EventRSVP>? RSVPs { get; set; }
 
         private IEnumerable<DressCode>? DressCodes { get; set; }
         private IEnumerable<int> DressCodeValues { get; set; } = [];
         private IEnumerable<Category>? Categories { get; set; }
         private IEnumerable<int> CategoryValues { get; set; } = [];
 
-
-        private async void SetRegionId(OnRegionChangeCallbackArgs args)
-        {
-            SelectedEvent!.RegionId = int.Parse(args.region!);
-        }
-
-		private void StartDateChange(OnDatetimePickerChangeCallbackArgs args)
-		{
-			SelectedEvent!.StartDate = args.DateTime;
-		}
-
-		private void EndDateChange(OnDatetimePickerChangeCallbackArgs args)
-		{
-			SelectedEvent!.EndDate = args.DateTime;
-		}
-		private async void SaveEvent()
-        {
-            if (SelectedEvent!.Id > 0)
-            {
-                SelectedEvent.UpdatedTS = DateTime.UtcNow;
-                SelectedEvent.UpdatedUserId = UserId.ToString();
-            }
-
-            SelectedEvent.DressCodes = DressCodes?.Where(d => DressCodeValues.Contains(d.Id)).ToList() ?? [];
-            SelectedEvent.Categories = Categories?.Where(c => CategoryValues.Contains(c.Id)).ToList() ?? [];
-            var eventGuid = await Events.UpsertEvent(SelectedEvent);
-            Navigation.NavigateTo($"/event/{eventGuid}");
-        }
     }
 }

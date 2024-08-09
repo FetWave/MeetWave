@@ -118,12 +118,12 @@ namespace FetWaveWWW.Pages.Events
 
         private void NavCreateEvent()
         {
-            Navigation.NavigateTo("/event/new");
+            Navigation.NavigateTo("/event/manage");
         }
 
         private void GotoEditEvent(string eventGuid)
         {
-            Navigation.NavigateTo($"/event/edit/{eventGuid}");
+            Navigation.NavigateTo($"/event/manage/{eventGuid}");
         }
     }
 }

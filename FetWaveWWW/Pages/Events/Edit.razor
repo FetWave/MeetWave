@@ -1,0 +1,16 @@
+﻿@page "/event/manage"
+@page "/event/manage/{eventGuid}"
+
+@if (SelectedEvent != null)
+{
+    <RadzenTabs>
+        <Tabs>
+            <RadzenTabsItem Text="Basic">
+                <EditEvent ContextEvent="SelectedEvent" />
+            </RadzenTabsItem>
+            <RadzenTabsItem Text="RSVPs" Disabled="@(SelectedEvent.Id == 0)">
+                <EventContact ContextEvent="SelectedEvent" />
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
+}
