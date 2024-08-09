@@ -35,14 +35,26 @@
         </div>
         <div class="row">
             <div class="col-lg-6 col-md-12">
-            @foreach (var r in RSVPs??[])
+                <h1>RSVPs</h1>
+            @if (!(RSVPs?.Any() ?? false))
+            {
+                <p>No RSVPs for this event</p>
+            }
+                @foreach (var r in RSVPs??[])
             {
                 <RadzenCheckBox @bind-Value=@SelectedRSVPs![r.Id] Name=@($"CheckBox{r.Id}") />
                 <RadzenLabel Text="@r.User.UserName" Component=@($"CheckBox{r.Id}") class="rz-ms-2" />
-                if (r.ApprovedTS is not null)
+                <ul>
+                @if (r.ApprovedTS is not null)
                 {
-                    <p>Approved - @r.ApprovedTS.Value.ToString("yyyy-MM-dd hh:mm tt")</p>
+                    <li>Approved - @r.ApprovedTS.Value.ToString("yyyy-MM-dd HH:mm") UTC - <button type="button" @onclick=@(async () => await UnapproveRSVP(r.Id))>Undo Approval</button></li>
                 }
+                else
+                {
+                    <li><button type="button" @onclick=@(async () => await ApproveRSVP(r.Id))>Approve</button></li>
+                }
+                </ul>
+                
             }
             </div>
             <div class="col-lg-6 col-md-12">
@@ -58,7 +70,16 @@
                 <label>Subject:</label><input type="text" @bind=@EmailSubject>
 
                 <RadzenHtmlEditor @bind-Value=@EmailBody style="height: 300px;"/>
-                <button type="button">Send Email</button>
+                @if (RSVPs?.Any() ?? false)
+                {
+                    <button type="button">Send Email</button>                    
+                }
+                else
+                {
+                    <button disabled type="button">Send Email</button>
+                    <p>Cannot send with no recipients</p>
+                }
+                
             </div>
         </div>
     </div>

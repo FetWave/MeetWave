@@ -105,5 +105,26 @@ namespace FetWaveWWW.Pages.Events
         private IEnumerable<Category>? Categories { get; set; }
         private IEnumerable<int> CategoryValues { get; set; } = [];
 
+        private async Task ApproveRSVP(int id)
+        {
+            var r = RSVPs?.FirstOrDefault(r => r.Id == id);
+            if (r == null)
+                return;
+            r.ApprovedByUserId = UserId.ToString();
+            r.ApprovedTS = DateTime.UtcNow;
+            await Events.UpsertRSVP(r);
+        }
+
+        private async Task UnapproveRSVP(int id)
+        {
+            var r = RSVPs?.FirstOrDefault(r => r.Id == id);
+            if (r == null)
+                return;
+            r.UpdatedUserId = UserId.ToString();
+            r.ApprovedByUserId = null;
+            r.ApprovedTS = null;
+            await Events.UpsertRSVP(r);
+        }
+
     }
 }
