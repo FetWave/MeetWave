@@ -164,9 +164,10 @@ namespace FetWaveWWW.Pages.Events
                 + "~~~~~"
                 + "<br/>"
                 + EmailBody;
+            var contextSubject = $"Fetwave event email - {EmailSubject}";
             if (toEmails?.Any() ?? false)
             {
-                await Google.EmailListAsync(toEmails!, EmailSubject, contextBody);
+                await Google.EmailListAsync(toEmails!, contextSubject, contextBody);
                 EmailFeedback = "Email sent";
             }
                 
