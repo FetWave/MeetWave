@@ -24,8 +24,8 @@ builder.Services.AddRadzenComponents();
 builder.Services.AddSingleton<AltchaPageService>();
 builder.Services.AddSingleton<IAltchaChallengeStore, AltchaCache>();
 
-builder.Services.AddSingleton<GoogleServices>();
-builder.Services.AddSingleton<IEmailSender, GoogleServices>();
+builder.Services.AddSingleton<GoogleService>();
+builder.Services.AddSingleton<IEmailSender, GoogleService>();
 
 builder.Services.AddScoped<SeedDataService>();
 

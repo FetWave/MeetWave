@@ -61,12 +61,14 @@ namespace FetWaveWWW.Services
                         .Include(e => e.Region)
                         .Include(e => e.Categories)
                         .Include(e => e.DressCodes)
+                        .Include(e => e.CreatedUser)
                         .Where(e => e.EndDate >= DateTime.UtcNow.AddMonths(-1) && e.StartDate <= DateTime.UtcNow.AddYears(1) && e.RegionId == regionId && e.DeletedTS == null).ToListAsync();
                     }) ?? []).Where(e => e.StartDate >= startTime && e.StartDate <= endTime).ToList()
                 : await _context.Events
                     .Include(e => e.Region)
                     .Include(e => e.Categories)
                     .Include(e => e.DressCodes)
+                    .Include(e => e.CreatedUser)
                     .Where(e => e.StartDate >= startTime && e.StartDate <= endTime && e.RegionId == regionId && e.DeletedTS == null).ToListAsync();
 
         private async Task<IList<EventRSVP>?> GetCachedRSVPs(int eventId)

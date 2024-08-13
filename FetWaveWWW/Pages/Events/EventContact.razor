@@ -70,9 +70,16 @@
                 <label>Subject:</label><input type="text" @bind=@EmailSubject>
 
                 <RadzenHtmlEditor @bind-Value=@EmailBody style="height: 300px;"/>
-                @if (RSVPs?.Any() ?? false)
+                <button type="button" @onclick=@UpdateRecipients>Refresh Recipients</button>
+                @if (!string.IsNullOrEmpty(EmailFeedback))
                 {
-                    <button type="button">Send Email</button>                    
+                    <p>@EmailFeedback</p>
+                }
+                @if (EmailRecipients?.Any() ?? false)
+                {
+                    <button type="button" @onclick=@SendEmail>Send Email</button>  
+                    <br/><label>Recipients:</label>
+                    <p>@string.Join(", ", (EmailRecipients ?? []).Select(u => u.UserName)) </p>
                 }
                 else
                 {

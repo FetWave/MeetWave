@@ -10,13 +10,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace FetWaveWWW.Services
 {
-    public class GoogleServices : IEmailSender
+    public class GoogleService : IEmailSender
     {
         public readonly CalendarService Calendar;
         public readonly GmailService Gmail;
         private readonly IMemoryCache cache;
 
-        public GoogleServices(IConfiguration Configuration, IMemoryCache memoryCache)
+        public GoogleService(IConfiguration Configuration, IMemoryCache memoryCache)
         {
             cache = memoryCache;
 

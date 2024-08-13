@@ -3,6 +3,7 @@ using FetWaveWWW.Helper;
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace FetWaveWWW.Pages.Events
@@ -20,6 +21,8 @@ namespace FetWaveWWW.Pages.Events
 
         [Inject]
         public EventsService Events { get; set; }
+        [Inject]
+        public GoogleService Google { get; set; }
         [Inject]
         public AuthHelperService Auth { get; set; }
         [Inject]
@@ -72,6 +75,7 @@ namespace FetWaveWWW.Pages.Events
             if (SelectedEvent != null)
             {
                 RSVPs = await Events.GetRSVPsForEvent(SelectedEvent.Id);
+                EmailRecipients = RSVPs?.Select(r => r.User).ToList();
                 SelectedRSVPs = RSVPs?.Select(r => r.Id).ToDictionary(x => x!, _ => false) ?? [];
             }
 
@@ -84,15 +88,31 @@ namespace FetWaveWWW.Pages.Events
 
         private Dictionary<int, bool>? SelectedRSVPs { get; set; }
 
-        private EmailListEnum? EmailList { get; set; }
+        private EmailListEnum? EmailList { get; set; } = EmailListEnum.All;
 
         private void EmailListOnChange(ChangeEventArgs args)
         {
             EmailList = Enum.TryParse<EmailListEnum>(args.Value?.ToString(), out var value) ? value : null;
+            UpdateRecipients();
         }
+
+        private void UpdateRecipients()
+        {
+            EmailRecipients = EmailList switch
+            {
+                EmailListEnum.All => RSVPs?.Select(r => r.User).ToList(),
+                EmailListEnum.Approved => RSVPs?.Where(r => r.ApprovedTS != null).Select(r => r.User).ToList(),
+                EmailListEnum.Selected => RSVPs?.Where(r => (SelectedRSVPs?.TryGetValue(r.Id, out var selected) ?? false) ? selected : false).Select(r => r.User).ToList(),
+                _ => null
+            };
+        }
+
+        private IEnumerable<IdentityUser>? EmailRecipients { get; set; }
 
         private string EmailSubject { get; set; } = string.Empty;
         private string EmailBody { get; set; } = string.Empty;
+
+        private string? EmailFeedback { get; set; }
 
         private Guid UserId { get; set; }
 
@@ -124,6 +144,32 @@ namespace FetWaveWWW.Pages.Events
             r.ApprovedByUserId = null;
             r.ApprovedTS = null;
             await Events.UpsertRSVP(r);
+        }
+
+        private async Task SendEmail()
+        {
+            if (string.IsNullOrEmpty(EmailSubject) || string.IsNullOrEmpty(EmailBody))
+            {
+                EmailFeedback = "Must have both a body and a subject";
+                return;
+            }
+            var toEmails = EmailRecipients?.Select(u => u.Email).Where(e => !string.IsNullOrEmpty(e));
+            var startTime = SelectedEvent!.StartDate;
+            var contextBody = $"You are receiving this message from {SelectedEvent!.CreatedUser!.UserName} for the event {SelectedEvent.Title}."
+                + "<br/>"
+                + $"Happening on {startTime?.DayOfWeek} {startTime:MM/dd/yyyy} at {startTime:hh:mm tt}"
+                + "<br/>"
+                + "~~~~~"
+                + "<br/>"
+                + "~~~~~"
+                + "<br/>"
+                + EmailBody;
+            if (toEmails?.Any() ?? false)
+            {
+                await Google.EmailListAsync(toEmails!, EmailSubject, contextBody);
+                EmailFeedback = "Email sent";
+            }
+                
         }
 
     }
