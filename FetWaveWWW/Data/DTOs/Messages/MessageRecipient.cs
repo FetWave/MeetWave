@@ -14,8 +14,8 @@ namespace FetWaveWWW.Data.DTOs.Messages
         public DateTime AddedTS { get; set; } = DateTime.UtcNow;
         [Required]
         public string AddedByUserId { get; set; }
-        public DateTime RemovedTS { get; set; }
-        public string RemovedByUserId { get; set; }
+        public DateTime? RemovedTS { get; set; }
+        public string? RemovedByUserId { get; set; }
         [Required]
         public string RecipientUserId { get; set; }
 
