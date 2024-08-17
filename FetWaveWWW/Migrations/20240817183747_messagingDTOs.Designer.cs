@@ -4,6 +4,7 @@ using FetWaveWWW.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FetWaveWWW.Migrations
 {
     [DbContext(typeof(FetWaveWWWContext))]
-    partial class FetWaveWWWContextModelSnapshot : ModelSnapshot
+    [Migration("20240817183747_messagingDTOs")]
+    partial class messagingDTOs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -277,14 +280,14 @@ namespace FetWaveWWW.Migrations
                     b.Property<string>("LineText")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("ThreadId")
+                    b.Property<long>("StringId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedUserId");
 
-                    b.HasIndex("ThreadId");
+                    b.HasIndex("StringId");
 
                     b.ToTable("MessageLines");
                 });
@@ -685,7 +688,7 @@ namespace FetWaveWWW.Migrations
 
                     b.HasOne("FetWaveWWW.Data.DTOs.Messages.MessageThread", "Thread")
                         .WithMany("Lines")
-                        .HasForeignKey("ThreadId")
+                        .HasForeignKey("StringId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
