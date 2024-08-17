@@ -80,19 +80,22 @@ namespace FetWaveWWW.Migrations
                         column: x => x.RecipientUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction,
+                        onUpdate: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_MessageRecipients_AspNetUsers_RemovedByUserId",
                         column: x => x.RemovedByUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction,
+                        onUpdate: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_MessageRecipients_MessageThreads_ThreadId",
                         column: x => x.ThreadId,
                         principalTable: "MessageThreads",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction,
+                        onUpdate: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -119,7 +122,8 @@ namespace FetWaveWWW.Migrations
                         column: x => x.MessageRecipientId,
                         principalTable: "MessageRecipients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction,
+                        onUpdate: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(
