@@ -68,7 +68,12 @@ namespace FetWaveWWW.Services
         public async Task<IEnumerable<MessageWrapper?>?> GetMessages(string userId, int threadTakeCount = 100, int lineTakeCount = 100)
         {
             var threads = await GetRecentThreadIds(userId, threadTakeCount);
-            return threads.Select(async t => await GetMessageThread(userId, t, lineTakeCount)).Select(r => r.Result).OrderByDescending(t => t?.LastMessageTS);
+            var messages = new List<MessageWrapper?>();
+            foreach (var  threadId in threads)
+            {
+                messages.Add(await GetMessageThread(userId, threadId, lineTakeCount));
+            }
+            return messages.OrderByDescending(t => t?.LastMessageTS);
         }
 
         public async Task<bool> SendMessage(string senderId, string recipientId, string? subject, string body, long? threadId = null)
