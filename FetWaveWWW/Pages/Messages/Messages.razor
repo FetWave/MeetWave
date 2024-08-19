@@ -31,7 +31,16 @@
             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0">
                 <RadzenButton Variant="Variant.Text" class="rz-text-secondary-color" Text="Mark as Read" />
                 <RadzenButton @ref=button Text="Open" Click="@(args => popup.ToggleAsync(button.Element))" />
-                <Popup @ref=popup Lazy=true Open="@(() => OnMessageOpen(message.Thread.Id))" class="message-popup">
+                <Popup @ref=popup Lazy=true Open="@(() => OnMessageOpen(message.Thread.Id))" class="message-popup"
+                        Style="
+                            display: none;
+                            position: absolute;
+                            height: 300px;
+                            width: 600px;
+                            padding: 5px;
+                            border: var(--rz-panel-border);
+                            background-color: var(--rz-panel-background-color)"
+                >
                     <RadzenTextBox id="search" Placeholder="New Message" Style="width:100%;" @oninput=@(args => newMessage = $"{args.Value}") Value="@newMessage" />
                     <RadzenButton Text="Send" Click="@(args => SendMessage(message.Thread.Id))" />
                     @foreach (var line in message.Lines.Take(100) ?? [])
