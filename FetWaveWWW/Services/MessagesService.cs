@@ -76,7 +76,7 @@ namespace FetWaveWWW.Services
             return messages.OrderByDescending(t => t?.LastMessageTS);
         }
 
-        public async Task<bool> SendMessage(string senderId, string recipientId, string? subject, string body, long? threadId = null)
+        public async Task<bool> SendMessage(string senderId, string body, string? recipientId = null, string? subject = null,  long? threadId = null)
         {
             try
             {
@@ -87,6 +87,9 @@ namespace FetWaveWWW.Services
                 }
                 else
                 {
+                    if (recipientId == null)
+                        throw new ArgumentNullException(nameof(recipientId));
+
                     var threadEntity = await _context.AddAsync<MessageThread>(new()
                     {
                         CreatedUserId = senderId,
