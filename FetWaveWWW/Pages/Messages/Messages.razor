@@ -1,0 +1,46 @@
+﻿@page "/messages"
+@using Radzen.Blazor.Rendering
+
+<h3>Messages</h3>
+@foreach(var message in UserMessages ?? [])
+{
+    if (message?.Thread != null && (message.Lines?.Any() ?? false))
+    {
+        <RadzenCard class="rz-my-12 rz-mx-auto" Style="max-width: 420px">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="1rem" class="rz-p-4">
+                <RadzenImage Path="ImagePath" Style="width: 100px; height: 100px; border-radius: 50%;" />
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Sender</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>@message.Thread.CreatedUser.UserName</b></RadzenText>
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Subject</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>@(message.Thread.Subject ?? "Direct Message")</b></RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+            <RadzenCard class="rz-background-color-primary-light rz-shadow-0 rz-border-radius-0 rz-p-8" style="margin: 1rem calc(-1 * var(--rz-card-padding));">
+                <RadzenText TextStyle="TextStyle.H6" class="rz-color-on-primary-light"><strong>Recent Messages</strong></RadzenText>
+                <RadzenRow RowGap="0">
+                    <RadzenColumn SizeSM="12">
+                        @foreach (var line in message.Lines?.Take(3) ?? [])
+                        {
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-color-on-primary-light rz-display-flex rz-mt-4 rz-mb-0">@line!.Author.UserName</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" class="rz-color-on-primary-light"><b>@line!.LineText?.Substring(0, Math.Min(line.LineText.Length, 100))@((line.LineText?.Length ?? 0) > 100 ? "..." : string.Empty)</b></RadzenText>
+                        }
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenCard>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0">
+                <RadzenButton Variant="Variant.Text" class="rz-text-secondary-color" Text="Mark as Read" />
+                <RadzenButton @ref=button Text="Open" Click="@(args => popup.ToggleAsync(button.Element))" />
+                <Popup @ref=popup Lazy=true Open="@(() => OnMessageOpen(message.Thread.Id))" class="message-popup">
+                    <RadzenTextBox id="search" Placeholder="New Message" Style="width:100%;" @oninput=@(args => newMessage = $"{args.Value}") Value="@newMessage" />
+                    <RadzenButton Text="Send" Click="@(args => SendMessage(message.Thread.Id))" />
+                    @foreach (var line in message.Lines.Take(100) ?? [])
+                    {
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-color-on-primary-light rz-display-flex rz-mt-4 rz-mb-0">@line!.Author.UserName</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1" class="rz-color-on-primary-light"><b>@line!.LineText</b></RadzenText>
+                    }
+                </Popup>
+            </RadzenStack>
+        </RadzenCard>
+    }
+}

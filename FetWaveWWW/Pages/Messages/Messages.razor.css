@@ -1,0 +1,9 @@
+﻿.message-popup {
+    display: none;
+    position: absolute;
+    height: 300px;
+    width: 600px;
+    padding: 5px;
+    border: var(--rz-panel-border);
+    background-color: var(--rz-panel-background-color);
+}
