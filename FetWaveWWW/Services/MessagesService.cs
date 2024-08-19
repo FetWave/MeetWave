@@ -17,14 +17,19 @@ namespace FetWaveWWW.Services
 
         private async Task<MessageThread?> GetThread(string userId, long threadId)
             => await _context.MessageThreads
+                .Include(t => t.CreatedUser)
                 .Include(t => t.Recipients)
+                .Include(t => t.Lines)
+                .ThenInclude(l => l.Author)
                 .Include(t => t.Lines)
                 .ThenInclude(l => l.Reads)
                 .FirstOrDefaultAsync(t => t.Id == threadId && (t.CreatedUserId == userId || t.Recipients.Any(r => r.RecipientUserId == userId && r.RemovedTS == null)));
         private async Task<IEnumerable<long>> GetRecentThreadIds(string userId, int takeCount = 100)
             => await _context.MessageThreads
+                .Include(t => t.CreatedUser)
                 .Include(t => t.Recipients)
                 .Include(t => t.Lines)
+                .ThenInclude(l => l.Author)
                 .Where(t => t.CreatedUserId == userId || t.Recipients.Any(r => r.RecipientUserId == userId && r.RemovedTS == null))
                 .OrderByDescending(t => t.Lines.Max(l => l.CreatedTS))
                 .Select(t => t.Id)
@@ -33,9 +38,12 @@ namespace FetWaveWWW.Services
 
         private async Task<IEnumerable<MessageLine>> GetRecentMessageLines(string userId, long threadId, int takeCount = 100)
             => await _context.MessageThreads
+                .Include(t => t.CreatedUser)
                 .Include(t => t.Recipients)
                 .Include(t => t.Lines)
                 .ThenInclude(l => l.Reads)
+                .Include(t => t.Lines)
+                .ThenInclude(l => l.Author)
                 .Where(t => t.Id == threadId && (t.CreatedUserId == userId || t.Recipients.Any(r => r.RecipientUserId == userId && r.RemovedTS == null)))
                 .SelectMany(t => t.Lines)
                 .OrderByDescending(l => l.CreatedTS)
