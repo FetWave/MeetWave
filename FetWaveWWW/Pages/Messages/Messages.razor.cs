@@ -65,8 +65,8 @@ namespace FetWaveWWW.Pages.Messages
         {
             await MessagesService.SendMessage(UserId.ToString()!, newMessage, threadId: threadId);
             await RefreshCurrentChat(threadId);
+            newMessage = string.Empty;
             StateHasChanged();
-
         }
     }
 }
