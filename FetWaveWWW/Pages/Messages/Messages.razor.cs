@@ -1,4 +1,5 @@
-﻿using FetWaveWWW.Helper;
+﻿using FetWaveWWW.Data.DTOs.Messages;
+using FetWaveWWW.Helper;
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Components;
 using Radzen.Blazor;
@@ -42,11 +43,15 @@ namespace FetWaveWWW.Pages.Messages
         private Guid? UserId { get; set; }
 
         private IEnumerable<MessageWrapper?>? UserMessages { get; set; }
+        RadzenDataList<MessageLine> dataList;
+        IEnumerable<MessageLine> lines;
         private string newMessage = string.Empty;
 
         private async Task OnMessageOpen(long threadId)
         {
 
+            lines = (UserMessages?.FirstOrDefault(m => m?.Thread?.Id == threadId)?.Lines ?? [])?
+                .Where(l => !string.IsNullOrEmpty(l?.LineText)).Select(l => l!) ?? [];
         }
 
         private async Task SendMessage(long threadId)
