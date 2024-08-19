@@ -47,6 +47,13 @@ namespace FetWaveWWW.Pages.Messages
         IEnumerable<MessageLine> lines;
         private string newMessage = string.Empty;
 
+        private async Task RefreshCurrentChat(long threadId)
+        {
+            UserMessages = await MessagesService.GetMessages(UserId.ToString()!); 
+            lines = (UserMessages?.FirstOrDefault(m => m?.Thread?.Id == threadId)?.Lines ?? [])?
+                .Where(l => !string.IsNullOrEmpty(l?.LineText)).Select(l => l!) ?? [];
+        }
+
         private async Task OnMessageOpen(long threadId)
         {
 
@@ -56,6 +63,9 @@ namespace FetWaveWWW.Pages.Messages
 
         private async Task SendMessage(long threadId)
         {
+            await MessagesService.SendMessage(UserId.ToString()!, newMessage, threadId: threadId);
+            await RefreshCurrentChat(threadId);
+            StateHasChanged();
 
         }
     }
