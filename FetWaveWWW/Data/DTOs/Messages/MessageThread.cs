@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FetWaveWWW.Data.DTOs.Messages
 {
@@ -14,5 +16,7 @@ namespace FetWaveWWW.Data.DTOs.Messages
 
         public virtual ICollection<MessageRecipient> Recipients { get; set; }
         public virtual ICollection<MessageLine> Lines { get; set; }
+        [ForeignKey(nameof(CreatedUserId))]
+        public virtual IdentityUser CreatedUser { get; set; }
     }
 }
