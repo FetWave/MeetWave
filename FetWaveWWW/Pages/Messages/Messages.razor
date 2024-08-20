@@ -35,8 +35,8 @@
                 </RadzenRow>
             </RadzenCard>
             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0">
-                <RadzenButton Variant="Variant.Text" class="rz-text-secondary-color" Text="Mark as Read" />
-                <RadzenButton @ref=buttons[i] Text="Open" Click="@(args => { ActiveThreadId = message.Thread.Id; popup.ToggleAsync(buttons[i].Element); })" />
+                <RadzenButton Variant="Variant.Text" Click=@(async () => await MarkAsRead(message.Thread.Id)) class="rz-text-secondary-color" Text="Mark as Read" />
+                <RadzenButton @ref=buttons[i] Text="Open" Click="@(async (args) => { ActiveThreadId = message.Thread.Id; await MarkAsRead(message.Thread.Id); await popup.ToggleAsync(buttons[i].Element); })" />
                 
             </RadzenStack>
         </RadzenCard>

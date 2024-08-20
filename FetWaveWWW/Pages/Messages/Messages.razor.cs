@@ -49,6 +49,12 @@ namespace FetWaveWWW.Pages.Messages
         private long ActiveThreadId { get; set; } = 0;
         private string newMessage = string.Empty;
 
+
+        private async Task MarkAsRead(long threadId)
+        {
+            await MessagesService.MarkRead(UserId.ToString()!, UserMessages?.FirstOrDefault(m => m?.Thread?.Id == threadId)?.Lines?.FirstOrDefault()?.Id ?? 0);
+        }
+
         private async Task RefreshCurrentChat(long threadId)
         {
             UserMessages = await MessagesService.GetMessages(UserId.ToString()!); 

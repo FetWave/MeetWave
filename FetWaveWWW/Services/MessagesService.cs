@@ -52,6 +52,39 @@ namespace FetWaveWWW.Services
                 .Take(takeCount)
                 .ToListAsync();
 
+
+        private async Task<MessageLine?> GetLine(string userId, long lineId)
+            => await _context.MessageLines
+                .Include(l => l.Author)
+                .Include(l => l.Reads)
+                .ThenInclude(r => r.Recipient)
+                .Include(l => l.Thread)
+                .ThenInclude(t => t.Recipients)
+                .FirstOrDefaultAsync(l => l.Id == lineId &&
+                    (l.Thread.CreatedUserId == userId || l.Thread.Recipients.Any(r => r.RecipientUserId == userId && r.RemovedTS == null)));
+
+        public async Task MarkRead(string userId, long lineId)
+        {
+            var line = await GetLine(userId, lineId);
+            if (line != null && line.Author.Id != userId)
+            {
+                var read = line.Reads.FirstOrDefault(r => r.Recipient.RecipientUserId == userId);
+                if (read == null)
+                {
+                    var recipient = line.Thread.Recipients.FirstOrDefault(r => r.RecipientUserId == userId);
+                    if (recipient != null)
+                    {
+                        await _context.AddAsync<MessageRead>(new()
+                        {
+                            MessageLineId = line.Id,
+                            MessageRecipientId = recipient.Id
+                        });
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+        }
+
         public async Task<int> GetUnreadCount(string userId, int threadTakeCount = 100)
         {
             var count = 0;
