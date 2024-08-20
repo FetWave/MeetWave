@@ -67,6 +67,8 @@ namespace FetWaveWWW.Pages.Messages
         private async Task MarkAsRead(long threadId)
         {
             await MessagesService.MarkRead(UserId.ToString()!, UserMessages?.FirstOrDefault(m => m?.Thread?.Id == threadId)?.Lines?.FirstOrDefault()?.Id ?? 0);
+            UserMessages = await MessagesService.GetMessages(UserId.ToString()!);
+            StateHasChanged();
         }
 
         private async Task RefreshCurrentChat(long threadId)
@@ -78,7 +80,6 @@ namespace FetWaveWWW.Pages.Messages
 
         private async Task OnMessageOpen()
         {
-
             lines = (UserMessages?.FirstOrDefault(m => m?.Thread?.Id == ActiveThreadId)?.Lines ?? [])?
                 .Where(l => !string.IsNullOrEmpty(l?.LineText)).Select(l => l!) ?? [];
         }
