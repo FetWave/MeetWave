@@ -38,10 +38,24 @@ namespace FetWaveWWW.Pages.Messages
             {
                 UserMessages = await MessagesService.GetMessages(UserId.ToString()!);
                 buttons = UserMessages?.Select(_ => new RadzenButton()).ToList();
+
+                foreach(var message in UserMessages ?? [])
+                {
+                    if ((message?.Thread?.Id ?? 0) == 0 || (!message?.Lines?.Any() ?? true))
+                    {
+                        continue;
+                    }
+                    var recent = message!.Lines!.FirstOrDefault();
+                    var isNew = recent != null && recent.Author.Id != UserId.ToString() && !recent.Reads.Any(r => r.Recipient.RecipientUserId == UserId.ToString());
+                    IsThreadNew[message!.Thread!.Id] = isNew;
+                }
+                
             }
         }
 
         private Guid? UserId { get; set; }
+
+        private Dictionary<long, bool> IsThreadNew { get; set; } = [];
 
         private IEnumerable<MessageWrapper?>? UserMessages { get; set; }
         RadzenDataList<MessageLine> dataList;
