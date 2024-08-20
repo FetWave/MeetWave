@@ -3,6 +3,7 @@ using FetWaveWWW.Data.DTOs.Messages;
 using FetWaveWWW.Helper;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace FetWaveWWW.Services
 {
@@ -23,6 +24,7 @@ namespace FetWaveWWW.Services
                 .ThenInclude(l => l.Author)
                 .Include(t => t.Lines)
                 .ThenInclude(l => l.Reads)
+                .ThenInclude(r => r.Recipient)
                 .FirstOrDefaultAsync(t => t.Id == threadId && (t.CreatedUserId == userId || t.Recipients.Any(r => r.RecipientUserId == userId && r.RemovedTS == null)));
         private async Task<IEnumerable<long>> GetRecentThreadIds(string userId, int takeCount = 100)
             => await _context.MessageThreads
@@ -49,6 +51,23 @@ namespace FetWaveWWW.Services
                 .OrderByDescending(l => l.CreatedTS)
                 .Take(takeCount)
                 .ToListAsync();
+
+        public async Task<int> GetUnreadCount(string userId, int threadTakeCount = 100)
+        {
+            var count = 0;
+            var threads = await GetRecentThreadIds(userId, threadTakeCount);
+            foreach (var threadId in threads)
+            {
+                var t = await GetThread(userId, threadId);
+                var recent = t?.Lines?.OrderByDescending(l => l.CreatedTS).FirstOrDefault();
+                if (recent?.Author.Id != userId && (recent?.Reads?.Any(r => r.Recipient.RecipientUserId == userId) ?? false))
+                {
+                    count++;
+                }
+            }
+            
+            return count;
+        }
 
         public async Task<MessageWrapper?> GetMessageThread(string userId, long threadId, int takeCount = 100)
         {

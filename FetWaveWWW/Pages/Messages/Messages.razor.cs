@@ -20,7 +20,7 @@ namespace FetWaveWWW.Pages.Messages
         private NavigationManager Navigation { get; set; }
 
         private Popup popup;
-        private RadzenButton button;
+        private IList<RadzenButton> buttons = [];
 #nullable enable
 
         protected override async Task OnInitializedAsync()
@@ -37,6 +37,7 @@ namespace FetWaveWWW.Pages.Messages
             if (UserId != null)
             {
                 UserMessages = await MessagesService.GetMessages(UserId.ToString()!);
+                buttons = UserMessages?.Select(_ => new RadzenButton()).ToList();
             }
         }
 
@@ -45,26 +46,27 @@ namespace FetWaveWWW.Pages.Messages
         private IEnumerable<MessageWrapper?>? UserMessages { get; set; }
         RadzenDataList<MessageLine> dataList;
         IEnumerable<MessageLine> lines;
+        private long ActiveThreadId { get; set; } = 0;
         private string newMessage = string.Empty;
 
         private async Task RefreshCurrentChat(long threadId)
         {
             UserMessages = await MessagesService.GetMessages(UserId.ToString()!); 
             lines = (UserMessages?.FirstOrDefault(m => m?.Thread?.Id == threadId)?.Lines ?? [])?
+                .Where(l => l != null).Select(l => l!) ?? [];
+        }
+
+        private async Task OnMessageOpen()
+        {
+
+            lines = (UserMessages?.FirstOrDefault(m => m?.Thread?.Id == ActiveThreadId)?.Lines ?? [])?
                 .Where(l => !string.IsNullOrEmpty(l?.LineText)).Select(l => l!) ?? [];
         }
 
-        private async Task OnMessageOpen(long threadId)
+        private async Task SendMessage()
         {
-
-            lines = (UserMessages?.FirstOrDefault(m => m?.Thread?.Id == threadId)?.Lines ?? [])?
-                .Where(l => !string.IsNullOrEmpty(l?.LineText)).Select(l => l!) ?? [];
-        }
-
-        private async Task SendMessage(long threadId)
-        {
-            await MessagesService.SendMessage(UserId.ToString()!, newMessage, threadId: threadId);
-            await RefreshCurrentChat(threadId);
+            await MessagesService.SendMessage(UserId.ToString()!, newMessage, threadId: ActiveThreadId);
+            await RefreshCurrentChat(ActiveThreadId);
             newMessage = string.Empty;
             StateHasChanged();
         }
