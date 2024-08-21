@@ -3,8 +3,6 @@ using FetWaveWWW.Helper;
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.ComponentModel.DataAnnotations;
 using static FetWaveWWW.Pages.Events.DatetimePicker;
 using static FetWaveWWW.Pages.Events.RegionSelector;
 
@@ -34,8 +32,12 @@ namespace FetWaveWWW.Pages.Events
             if (UserId != null)
             {
                 OrganizedEvents = await Events.GetOrganizingEvents(UserId.ToString()!, CalendarStartDate, CalendarEndDate);
+                RsvpedEvents = await Events.GetRsvpedEvents(UserId.ToString()!, CalendarStartDate, CalendarEndDate);
             }
+            loading = false;
         }
+
+        private bool loading { get; set; } = true;
 
         private int? RegionId { get; set; }
         private string? StateCode { get; set; }
@@ -63,7 +65,12 @@ namespace FetWaveWWW.Pages.Events
             if (UserId != null)
             {
                 OrganizedEvents = await Events.GetOrganizingEvents(UserId.ToString()!, CalendarStartDate, CalendarEndDate);
+                RsvpedEvents = await Events.GetRsvpedEvents(UserId.ToString()!, CalendarStartDate, CalendarEndDate);
                 foreach (var e in OrganizedEvents ?? [])
+                {
+                    EventRsvps[e.Id] = await Events.GetRSVPsForEvent(e.Id) ?? [];
+                }
+                foreach (var e in RsvpedEvents ?? [])
                 {
                     EventRsvps[e.Id] = await Events.GetRSVPsForEvent(e.Id) ?? [];
                 }
@@ -106,6 +113,7 @@ namespace FetWaveWWW.Pages.Events
 
         private IEnumerable<CalendarEvent>? CalendarEvents { get; set; }
         private IEnumerable<CalendarEvent>? OrganizedEvents { get; set; }
+        private IEnumerable<CalendarEvent>? RsvpedEvents { get; set; }
         private Dictionary<int, IEnumerable<EventRSVP>> EventRsvps { get; set; } = [];
 
         private async Task UpdateRsvp(RsvpStateEnum? state, EventRSVP? rsvp, int? eventId)

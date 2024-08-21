@@ -41,6 +41,7 @@
 
         if (userId != null)
         {
+            await Task.Delay(1000);
             newMessageCount = await Messages.GetUnreadCount(userId);
         }
     }

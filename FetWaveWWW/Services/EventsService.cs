@@ -219,5 +219,15 @@ namespace FetWaveWWW.Services
                 .Where(e => e.CreatedUserId == userId && e.StartDate >= startDate && e.StartDate <= endDate)
                 .ToListAsync();
 
+        public async Task<IEnumerable<CalendarEvent>> GetRsvpedEvents(string userId, DateTime startDate, DateTime endDate)
+           => await _context.Events
+               .Include(e => e.RSVPs)
+               .Include(e => e.Region)
+               .Include(e => e.Categories)
+               .Include(e => e.DressCodes)
+               .Include(e => e.CreatedUser)
+               .Where(e => e.RSVPs.Any(r => r.UserId == userId) && e.StartDate >= startDate && e.StartDate <= endDate)
+               .ToListAsync();
+
     }
 }

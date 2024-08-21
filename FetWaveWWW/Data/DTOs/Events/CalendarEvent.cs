@@ -54,5 +54,7 @@ namespace FetWaveWWW.Data.DTOs.Events
         [ForeignKey(nameof(UpdatedUserId))]
         public virtual IdentityUser? UpdatedUser { get; set; }
 
+        public virtual ICollection<EventRSVP> RSVPs { get; set; }
+
     }
 }
