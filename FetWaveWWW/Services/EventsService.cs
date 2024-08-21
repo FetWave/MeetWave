@@ -209,5 +209,15 @@ namespace FetWaveWWW.Services
 
         public async Task<int?> UpsertRSVP(EventRSVP rsvp)
             => await AddEditRSVP(rsvp);
+
+        public async Task<IEnumerable<CalendarEvent>> GetOrganizingEvents(string userId, DateTime startDate, DateTime endDate)
+            => await _context.Events
+                .Include(e => e.Region)
+                .Include(e => e.Categories)
+                .Include(e => e.DressCodes)
+                .Include(e => e.CreatedUser)
+                .Where(e => e.CreatedUserId == userId && e.StartDate >= startDate && e.StartDate <= endDate)
+                .ToListAsync();
+
     }
 }

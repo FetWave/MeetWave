@@ -30,6 +30,11 @@ namespace FetWaveWWW.Pages.Events
             {
                 UserId = userId;
             }
+
+            if (UserId != null)
+            {
+                OrganizedEvents = await Events.GetOrganizingEvents(UserId.ToString()!, CalendarStartDate, CalendarEndDate);
+            }
         }
 
         private int? RegionId { get; set; }
@@ -55,6 +60,11 @@ namespace FetWaveWWW.Pages.Events
 
         private async Task UpdateCalendarEvents()
         {
+            if (UserId != null)
+            {
+                OrganizedEvents = await Events.GetOrganizingEvents(UserId.ToString()!, CalendarStartDate, CalendarEndDate);
+            }
+
             if (!string.IsNullOrEmpty(StateCode) || RegionId.HasValue)
             {
 
@@ -68,9 +78,10 @@ namespace FetWaveWWW.Pages.Events
                     EventRsvps[e.Id] = await Events.GetRSVPsForEvent(e.Id) ?? [];
                 }
 
-                StateHasChanged();
+                
             }
 
+            StateHasChanged();
         }
         
         private Guid? UserId { get; set; }
@@ -91,6 +102,7 @@ namespace FetWaveWWW.Pages.Events
         }
 
         private IEnumerable<CalendarEvent>? CalendarEvents { get; set; }
+        private IEnumerable<CalendarEvent>? OrganizedEvents { get; set; }
         private Dictionary<int,IEnumerable<EventRSVP>>? EventRsvps { get; set; }
 
         private async Task UpdateRsvp(RsvpStateEnum? state, EventRSVP? rsvp, int? eventId)
