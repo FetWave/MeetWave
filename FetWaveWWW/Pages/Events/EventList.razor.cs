@@ -63,6 +63,10 @@ namespace FetWaveWWW.Pages.Events
             if (UserId != null)
             {
                 OrganizedEvents = await Events.GetOrganizingEvents(UserId.ToString()!, CalendarStartDate, CalendarEndDate);
+                foreach (var e in OrganizedEvents ?? [])
+                {
+                    EventRsvps[e.Id] = await Events.GetRSVPsForEvent(e.Id) ?? [];
+                }
             }
 
             if (!string.IsNullOrEmpty(StateCode) || RegionId.HasValue)
@@ -72,7 +76,6 @@ namespace FetWaveWWW.Pages.Events
                     ? await Events.GetEventsForState(CalendarStartDate, CalendarEndDate, StateCode)
                     : await Events.GetEventsForRegion(CalendarStartDate, CalendarEndDate, RegionId ?? throw new Exception("Invalid region selection"));
 
-                EventRsvps = [];
                 foreach(var e in CalendarEvents ?? [])
                 {
                     EventRsvps[e.Id] = await Events.GetRSVPsForEvent(e.Id) ?? [];
@@ -103,7 +106,7 @@ namespace FetWaveWWW.Pages.Events
 
         private IEnumerable<CalendarEvent>? CalendarEvents { get; set; }
         private IEnumerable<CalendarEvent>? OrganizedEvents { get; set; }
-        private Dictionary<int,IEnumerable<EventRSVP>>? EventRsvps { get; set; }
+        private Dictionary<int, IEnumerable<EventRSVP>> EventRsvps { get; set; } = [];
 
         private async Task UpdateRsvp(RsvpStateEnum? state, EventRSVP? rsvp, int? eventId)
         {
