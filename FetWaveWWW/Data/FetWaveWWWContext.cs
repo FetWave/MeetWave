@@ -1,4 +1,5 @@
 ﻿using FetWaveWWW.Data.DTOs.Events;
+using FetWaveWWW.Data.DTOs.Messages;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,11 @@ public class FetWaveWWWContext : IdentityDbContext<IdentityUser>
     public DbSet<Region> Regions { get; set; }
     public DbSet<EventRSVP> RSVPs { get; set; }
     public DbSet<RSVPState> RSVPStates { get; set; }
+
+    public DbSet<MessageThread> MessageThreads { get; set; }
+    public DbSet<MessageLine> MessageLines { get; set; }
+    public DbSet<MessageRecipient> MessageRecipients { get; set; }
+    public DbSet<MessageRead> MessageReads { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -1,4 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using FetWaveWWW.Services
+@inject AuthHelperService Auth
+@inject MessagesService Messages
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">FetWave</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -14,10 +18,36 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/events" Match="NavLinkMatch.All">
+                <span class="oi oi-calendar" aria-hidden="true"></span> Events
+            </NavLink>
+        </div>
+        @if (!string.IsNullOrEmpty(userId))
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/messages" Match="NavLinkMatch.All">
+                    <span class="oi oi-envelope-closed" aria-hidden="true"></span> Messages @(newMessageCount > 0 ? $"({newMessageCount} New)" : string.Empty)
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        userId = await Auth.GetUserId();
+
+        if (userId != null)
+        {
+            newMessageCount = await Messages.GetUnreadCount(userId);
+        }
+    }
+
+    private string? userId;
+    private int newMessageCount = 0;
+
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;

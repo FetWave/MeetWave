@@ -4,6 +4,7 @@ using FetWaveWWW.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FetWaveWWW.Migrations
 {
     [DbContext(typeof(FetWaveWWWContext))]
-    partial class FetWaveWWWContextModelSnapshot : ModelSnapshot
+    [Migration("20240817190533_addMessageSubject")]
+    partial class addMessageSubject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -369,14 +372,12 @@ namespace FetWaveWWW.Migrations
 
                     b.Property<string>("CreatedUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Subject")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedUserId");
 
                     b.ToTable("MessageThreads");
                 });
@@ -748,17 +749,6 @@ namespace FetWaveWWW.Migrations
                     b.Navigation("RemovedUser");
 
                     b.Navigation("Thread");
-                });
-
-            modelBuilder.Entity("FetWaveWWW.Data.DTOs.Messages.MessageThread", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "CreatedUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

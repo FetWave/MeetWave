@@ -22,6 +22,8 @@ namespace FetWaveWWW.Pages.Events
         [Inject]
         public EventsService Events { get; set; }
         [Inject]
+        public MessagesService Messages { get; set; }
+        [Inject]
         public GoogleService Google { get; set; }
         [Inject]
         public AuthHelperService Auth { get; set; }
@@ -153,6 +155,7 @@ namespace FetWaveWWW.Pages.Events
                 EmailFeedback = "Must have both a body and a subject";
                 return;
             }
+
             var toEmails = EmailRecipients?.Select(u => u.Email).Where(e => !string.IsNullOrEmpty(e));
             var startTime = SelectedEvent!.StartDate;
             var contextBody = $"You are receiving this message from {SelectedEvent!.CreatedUser!.UserName} for the event {SelectedEvent.Title}."
@@ -164,7 +167,10 @@ namespace FetWaveWWW.Pages.Events
                 + "~~~~~"
                 + "<br/>"
                 + EmailBody;
-            var contextSubject = $"Fetwave event email - {EmailSubject}";
+            var contextSubject = $"Fetwave event - {EmailSubject}";
+
+            await Messages.StartGroupMessageBCC(UserId.ToString(), EmailRecipients?.Select(r => r.Id) ?? [], contextSubject, contextBody);
+
             if (toEmails?.Any() ?? false)
             {
                 await Google.EmailListAsync(toEmails!, contextSubject, contextBody);

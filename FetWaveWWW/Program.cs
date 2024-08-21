@@ -30,6 +30,7 @@ builder.Services.AddSingleton<IEmailSender, GoogleService>();
 builder.Services.AddScoped<SeedDataService>();
 
 builder.Services.AddScoped<EventsService>();
+builder.Services.AddScoped<MessagesService>();
 builder.Services.AddScoped<AuthHelperService>();
 
 builder.Services.AddAuthentication()
