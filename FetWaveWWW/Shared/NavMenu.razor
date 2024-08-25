@@ -26,6 +26,11 @@
         @if (!string.IsNullOrEmpty(userId))
         {
             <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/profile" Match="NavLinkMatch.All">
+                    <span class="bi bi-person-circle" aria-hidden="true"></span>Profile
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/messages" Match="NavLinkMatch.All">
                     <span class="oi oi-envelope-closed" aria-hidden="true"></span> Messages @(newMessageCount > 0 ? $"({newMessageCount} New)" : string.Empty)
                 </NavLink>
@@ -41,7 +46,6 @@
 
         if (userId != null)
         {
-            await Task.Delay(1000);
             newMessageCount = await Messages.GetUnreadCount(userId);
         }
     }

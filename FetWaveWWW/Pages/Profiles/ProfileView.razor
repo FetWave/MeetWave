@@ -1,0 +1,53 @@
+﻿@page "/profile"
+@page "/profile/{userName}"
+@using System.Web;
+@using System.Globalization
+@using FetWaveWWW.Helper
+@using FetWaveWWW.Pages.Events
+@{
+    var ti = new CultureInfo("en-US", false).TextInfo;
+}
+
+@if (NewUser)
+{
+    <h1>Welcome new user</h1>
+    <h3>Profile Setup</h3>
+    <p>All fields are optional</p>
+    <p>RSVPs and profiles are public by default</p>
+    <div class="form-group">
+        <input type="checkbox" @bind="Profile.PrivateProfile"/><label>Private profile (profile cannot be viewed except by friends, RSVPs are still public)</label>
+    </div>
+    <div class="form-group">
+        <input type="checkbox" @bind="Profile.DefaultPrivateRsvp"/><label>Default Private RSVPs (will show to organizaers and in head count, will not show name on RSVP list)</label>
+    </div>
+    <div class="form-group">
+        <RegionSelector OnRegionChange="GetRegion"/>
+    </div>
+    <div class="form-group">
+        <label>Pronouns</label>
+        <br />
+        <PronounSelector OnPronounChange="GetPronouns"/>
+    </div>
+    <div class="form-group">
+        <label>About Me</label>
+        <br />
+        <textarea @bind="Profile.AboutMe" />
+    </div>
+    <button type="button" @onclick="@(async () => await AddEditProfile())">Create Profile</button>
+}
+@if(Profile != null)
+{
+    <h1>@Profile.User.UserName</h1>
+    @if (Profile.Pronouns != null)
+    {
+        <h3>@Profile.Pronouns.Value</h3>
+    }
+    @if (Profile.Region != null)
+    {
+        <h3>@ti.ToTitleCase(Profile.Region.Name ?? string.Empty), @Profile.Region.StateCode</h3>
+    }
+    @if (!string.IsNullOrWhiteSpace(Profile.AboutMe))
+    {
+        <p>@Profile.AboutMe</p>
+    }
+}

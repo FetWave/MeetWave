@@ -9,7 +9,10 @@ using Radzen;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("FetWaveWWWContextConnection") ?? throw new InvalidOperationException("Connection string 'FetWaveWWWContextConnection' not found.");
 
-builder.Services.AddDbContext<FetWaveWWWContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<FetWaveWWWContext>(
+    options => options.UseSqlServer(connectionString),
+    contextLifetime: ServiceLifetime.Transient,
+    optionsLifetime: ServiceLifetime.Transient);
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<FetWaveWWWContext>();
 
@@ -29,9 +32,10 @@ builder.Services.AddSingleton<IEmailSender, GoogleService>();
 
 builder.Services.AddScoped<SeedDataService>();
 
-builder.Services.AddScoped<EventsService>();
-builder.Services.AddScoped<MessagesService>();
-builder.Services.AddScoped<AuthHelperService>();
+builder.Services.AddTransient<EventsService>();
+builder.Services.AddTransient<MessagesService>();
+builder.Services.AddTransient<ProfilesService>();
+builder.Services.AddTransient<AuthHelperService>();
 
 builder.Services.AddAuthentication()
     .AddGoogle(googleOptions =>
@@ -77,5 +81,6 @@ app.MapFallbackToPage("/_Host");
 using var scope = app.Services.CreateScope();
 var seedService = scope.ServiceProvider.GetService<SeedDataService>();
 await seedService?.SeedEventInfra();
+await seedService?.SeedProfileInfra();
 
 app.Run();

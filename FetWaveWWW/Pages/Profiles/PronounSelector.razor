@@ -1,0 +1,7 @@
+﻿<select value="@SelectedPronounId" @onchange="OnPronounSelectChange">
+    <option value=""></option>
+    @foreach (var p in Pronouns ?? [])
+    {
+        <option value="@p.Id">@p.Value</option>
+    }
+</select>

@@ -1,4 +1,7 @@
 ﻿using FetWaveWWW.Data.DTOs.Events;
+using FetWaveWWW.Data.DTOs.Profile;
+using Microsoft.Build.Evaluation;
+using System.Security.AccessControl;
 using System.Text.Json;
 
 namespace FetWaveWWW.Data
@@ -17,6 +20,11 @@ namespace FetWaveWWW.Data
             await SeedDressCodes();
             await SeedRegions();
             await SeedRSVPStates();
+        }
+
+        public async Task SeedProfileInfra()
+        {
+            await SeedPronouns();
         }
 
         private async Task SeedCategories()
@@ -78,6 +86,23 @@ namespace FetWaveWWW.Data
             if (newStates?.Any() ?? false)
             {
                 await _context.RSVPStates.AddRangeAsync(newStates);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task SeedPronouns()
+        {
+            using var sr = new StreamReader("Data/SEED/Pronouns.json");
+            var pronouns = JsonSerializer.Deserialize<IEnumerable<UserPronouns>>(await sr.ReadToEndAsync());
+
+            var existingPronouns = _context.Pronouns.Select(c => c.Value).ToList();
+
+            var newPronouns = pronouns?.Where(c => !existingPronouns.Any(e => e.Equals(c.Value, StringComparison.OrdinalIgnoreCase)));
+            if (newPronouns?.Any() ?? false)
+            {
+                foreach (var p in newPronouns)
+                    p.IsPublicTS = DateTime.UtcNow;
+                await _context.Pronouns.AddRangeAsync(newPronouns);
                 await _context.SaveChangesAsync();
             }
         }

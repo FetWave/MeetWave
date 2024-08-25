@@ -1,5 +1,6 @@
 ﻿using FetWaveWWW.Data.DTOs.Events;
 using FetWaveWWW.Data.DTOs.Messages;
+using FetWaveWWW.Data.DTOs.Profile;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,9 @@ public class FetWaveWWWContext : IdentityDbContext<IdentityUser>
     public DbSet<MessageLine> MessageLines { get; set; }
     public DbSet<MessageRecipient> MessageRecipients { get; set; }
     public DbSet<MessageRead> MessageReads { get; set; }
+
+    public DbSet<UserProfile> Profiles { get; set; }
+    public DbSet<UserPronouns> Pronouns { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

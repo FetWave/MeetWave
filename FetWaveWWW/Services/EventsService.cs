@@ -113,7 +113,7 @@ namespace FetWaveWWW.Services
 
             if (calendarEvent.Id == 0)
             {
-                _context.Add(calendarEvent);
+                await _context.AddAsync(calendarEvent);
             }
             else
             {
@@ -153,7 +153,7 @@ namespace FetWaveWWW.Services
 
             if (rsvp.Id == 0)
             {
-                _context.Add(rsvp);
+                await _context.AddAsync(rsvp);
             }
             else
             {
