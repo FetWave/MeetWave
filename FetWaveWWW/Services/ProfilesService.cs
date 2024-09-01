@@ -1,6 +1,8 @@
 ﻿using FetWaveWWW.Data;
+using FetWaveWWW.Data.DTOs.Events;
 using FetWaveWWW.Data.DTOs.Profile;
 using Google.Apis.Gmail.v1.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Caching.Memory;
@@ -62,7 +64,22 @@ namespace FetWaveWWW.Services
             if (profile.Id == 0)
                 await _context.Profiles.AddAsync(profile);
             else
+            {
+                var localUser = _context.Set<IdentityUser>()
+                .Local
+                .FirstOrDefault(entry => entry.Id.Equals(profile.User.Id));
+
+                // check if local is not null 
+                if (localUser != null)
+                {
+                    // detach
+                    _context.Entry(localUser).State = EntityState.Detached;
+                }
                 _context.Attach(profile);
+
+                _context.Entry(profile).State = EntityState.Modified;
+            }
+                
             await _context.SaveChangesAsync();
             return profile;
         }

@@ -1,12 +1,8 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Data.DTOs.Profile;
-using FetWaveWWW.Helper;
+﻿using FetWaveWWW.Data.DTOs.Profile;
 using FetWaveWWW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using System.Drawing;
-using System.Drawing.Text;
-using static FetWaveWWW.Pages.Events.RegionSelector;
+using Radzen;
 
 namespace FetWaveWWW.Pages.Profiles
 {
@@ -23,7 +19,7 @@ namespace FetWaveWWW.Pages.Profiles
         [Inject]
         public AuthHelperService Auth { get; set; }
         [Inject]
-        private NavigationManager Navigation { get; set; }
+        public NavigationManager Navigation { get; set; }
 #nullable enable
 
         [Parameter]
@@ -56,12 +52,14 @@ namespace FetWaveWWW.Pages.Profiles
                 else
                 {
                     var profile = await Profiles.GetProfile(userName);
+                    SameUser = profile?.UserId == UserId.ToString();
+
                     if (profile == null)
                     {
                         Navigation.NavigateTo("/");
                         return;
                     }
-                    else if (profile.PrivateProfile && profile.UserId != UserId.ToString())
+                    else if (profile.PrivateProfile && !SameUser)
                     {
                         Profile = ProfilesService.PrivateProfile;
                     }
@@ -74,24 +72,7 @@ namespace FetWaveWWW.Pages.Profiles
             }
         }
 
-        public void GetRegion(OnRegionChangeCallbackArgs args)
-            => Profile.DefaultRegionId = int.TryParse(args.region, out var regionId) && regionId > 0 ? regionId : null;
-
-        public void GetPronouns(int id)
-            => Profile.PronounsId = id > 0 ? id : null;
-
-        private async Task AddEditProfile()
-        {
-            var existing = await Profiles.GetProfile(Guid.Parse(Profile.UserId));
-            if (Profile.Id == 0 && existing != null)
-            {
-                return;
-            }
-            await Profiles.UpsertProfile(Profile);
-            if (existing == null)
-                Navigation.NavigateTo("/profile", true);
-            StateHasChanged();
-        }
+        private bool SameUser { get; set; }
 
         private bool NewUser { get; set; }
         private Guid? UserId { get; set; }

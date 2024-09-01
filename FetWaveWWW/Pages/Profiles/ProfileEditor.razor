@@ -1,0 +1,30 @@
+﻿@using FetWaveWWW.Pages.Events
+
+<RadzenStack Gap="1rem" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.SpaceBetween" Style="height: 100%;">
+    <RadzenStack>
+        <p>All fields are optional</p>
+        <p>RSVPs and profiles are public by default</p>
+        <div class="form-group">
+            <input type="checkbox" @bind="Profile.PrivateProfile"/><label>Private profile (profile cannot be viewed except by friends, RSVPs are still public)</label>
+        </div>
+        <div class="form-group">
+            <input type="checkbox" @bind="Profile.DefaultPrivateRsvp"/><label>Default Private RSVPs (will show to organizaers and in head count, will not show name on RSVP list)</label>
+        </div>
+        <div class="form-group">
+            <RegionSelector OnRegionChange="GetRegion" SelectedRegionId="Profile.DefaultRegionId"/>
+        </div>
+        <div class="form-group">
+            <label>Pronouns</label>
+            <br />
+            <PronounSelector OnPronounChange="GetPronouns" SelectedPronounId="Profile.PronounsId"/>
+        </div>
+        <div class="form-group">
+            <label>About Me</label>
+            <br />
+            <textarea @bind="Profile.AboutMe" />
+        </div>
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
+        <RadzenButton Click="@(async () => await AddEditProfile())" Variant="Variant.Flat" Text="Save" Style="width: 120px" />
+    </RadzenStack>
+</RadzenStack>
