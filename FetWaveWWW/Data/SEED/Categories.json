@@ -1,11 +1,8 @@
 [
-  { "Name": "Educational" },
-  { "Name": "Munch" },
-  { "Name": "Slosh" },
   { "Name": "Social" },
-  { "Name": "Sex Party" },
-  { "Name": "Kink Party" },
-  { "Name": "Kinky Sex Party" },
+  { "Name": "18+ Party" },
+  { "Name": "21+ Party" },
   { "Name": "Festival" },
-  { "Name": "Conference" }
+  { "Name": "Conference" },
+  { "Name": "Educational" }
 ]

@@ -1,15 +1,11 @@
 [
   {
+    "Name": "Casual",
+    "Details": "Casual"
+  },
+  {
     "Name": "Formal",
-    "Details": "Vanilla the entire event, but dressed up"
-  },
-  {
-    "Name": "Vanilla",
-    "Details": "Plain clothes the entire event"
-  },
-  {
-    "Name": "Vanilla To The Door",
-    "Details": "Plain clothes until you get inside, see event details for what is allowed inside"
+    "Details": "Dressed up"
   },
   {
     "Name": "Costume",
@@ -17,6 +13,10 @@
   },
   {
     "Name": "Gear",
-    "Details": "Kink gear matching the theme"
+    "Details": "Interest-specific gear"
+  },
+  {
+    "Name": "See Event Details",
+    "Details": "See Event Details"
   }
 ]
