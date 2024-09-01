@@ -13,7 +13,7 @@
     <h1>Welcome new user</h1>
     <ProfileEditor Profile="Profile" />
 }
-@if(Profile != null)
+@if(Profile?.Id > 0)
 {
     <RadzenTabs>
         <Tabs>
