@@ -1,11 +1,11 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Services;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components;
 
-namespace FetWaveWWW.Pages.Events
+namespace MeetWave.Pages.Events
 {
-    public partial class Edit
+    public partial class Edit : ComponentBase
     {
         [Parameter]
         public string? eventGuid { get; set; }

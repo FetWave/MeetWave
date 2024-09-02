@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FetWaveWWW.Data.DTOs.Events
+namespace MeetWave.Data.DTOs.Events
 {
     public class Category
     {

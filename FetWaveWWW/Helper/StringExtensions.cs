@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace FetWaveWWW.Helper
+namespace MeetWave.Helper
 {
     public static  class StringExtensions
     {

@@ -1,17 +1,17 @@
-﻿using FetWaveWWW.Data;
-using FetWaveWWW.Data.DTOs.Messages;
-using FetWaveWWW.Helper;
+﻿using MeetWave.Data;
+using MeetWave.Data.DTOs.Messages;
+using MeetWave.Helper;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
-namespace FetWaveWWW.Services
+namespace MeetWave.Services
 {
     public class MessagesService
     {
-        private readonly FetWaveWWWContext _context;
+        private readonly MeetWaveContext _context;
 
-        public MessagesService(FetWaveWWWContext context)
+        public MessagesService(MeetWaveContext context)
         {
             _context = context;
         }

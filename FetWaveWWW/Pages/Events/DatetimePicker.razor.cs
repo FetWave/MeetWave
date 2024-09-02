@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace FetWaveWWW.Pages.Events
+namespace MeetWave.Pages.Events
 {
     public partial class DatetimePicker : ComponentBase
     {

@@ -1,10 +1,10 @@
-﻿using FetWaveWWW.Data.DTOs.Profile;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Profile;
+using MeetWave.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 
-namespace FetWaveWWW.Pages.Profiles
+namespace MeetWave.Pages.Profiles
 {
     [Authorize]
     public partial class ProfileView : ComponentBase

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace FetWaveWWW.Migrations
+namespace MeetWave.Migrations
 {
     /// <inheritdoc />
     public partial class addMessageSubject : Migration

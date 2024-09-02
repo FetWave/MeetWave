@@ -1,11 +1,11 @@
-﻿using FetWaveWWW.Data.DTOs.Profile;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Profile;
+using MeetWave.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Radzen;
-using static FetWaveWWW.Pages.Events.RegionSelector;
+using static MeetWave.Pages.Events.RegionSelector;
 
-namespace FetWaveWWW.Pages.Profiles
+namespace MeetWave.Pages.Profiles
 {
     public partial class ProfileEditor : ComponentBase
     {

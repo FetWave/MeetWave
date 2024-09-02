@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FetWaveWWW.Migrations
+namespace MeetWave.Migrations
 {
     /// <inheritdoc />
     public partial class profiles : Migration

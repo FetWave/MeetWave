@@ -1,10 +1,10 @@
-﻿using FetWaveWWW.Helper;
+﻿using MeetWave.Helper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FetWaveWWW.Data.DTOs.Events
+namespace MeetWave.Data.DTOs.Events
 {
     [Index(nameof(UniqueId), IsUnique = true)]
     [Index(nameof(RegionId))]

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FetWaveWWW.Data.DTOs.Events
+namespace MeetWave.Data.DTOs.Events
 {
     public class RSVPState
     {

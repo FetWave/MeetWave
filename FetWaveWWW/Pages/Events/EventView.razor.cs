@@ -1,10 +1,11 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Helper;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Helper;
+using MeetWave.Services;
+using MeetWave.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 
-namespace FetWaveWWW.Pages.Events
+namespace MeetWave.Pages.Events
 {
     [Authorize]
     public partial class EventView : ComponentBase
@@ -18,6 +19,8 @@ namespace FetWaveWWW.Pages.Events
         public AuthHelperService Auth { get; set; }
         [Inject]
         private NavigationManager Navigation { get; set; }
+        [Inject]
+        private IPaymentsService Payments { get; set; }
 #nullable enable
 
         [Parameter]

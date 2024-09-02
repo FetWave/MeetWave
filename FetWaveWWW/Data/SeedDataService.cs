@@ -1,15 +1,15 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Data.DTOs.Profile;
+﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Data.DTOs.Profile;
 using Microsoft.Build.Evaluation;
 using System.Security.AccessControl;
 using System.Text.Json;
 
-namespace FetWaveWWW.Data
+namespace MeetWave.Data
 {
     public class SeedDataService
     {
-        private readonly FetWaveWWWContext _context;
-        public SeedDataService(FetWaveWWWContext context)
+        private readonly MeetWaveContext _context;
+        public SeedDataService(MeetWaveContext context)
         {
             _context = context;
         }

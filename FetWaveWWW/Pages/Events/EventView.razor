@@ -1,7 +1,7 @@
 ﻿@page "/event/{eventGuid}"
 @using System.Web;
 @using System.Globalization
-@using FetWaveWWW.Helper
+@using MeetWave.Helper
 @{
     var rsvpClasses = new Dictionary<string, List<string>>
     {
@@ -60,7 +60,8 @@
             </div>
             <p class="card-text">@calendarEvent.Description</p>
             <p>Going: @((MarkupString)(GoingHTML ?? ""))</p>
-            <p>Interested: @((MarkupString)(InterestedHTML ?? ""))</p>
+            <p>Interested: @((MarkupString)(InterestedHTML ?? ""))</p>\
+            <a href="@Payments.ChargeEventCover(1, 1, null, 0, "https://google.com").Result">Create Payment Link</a>
         </div>
     </div>
 }

@@ -1,9 +1,9 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Services;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics.Contracts;
 
-namespace FetWaveWWW.Pages.Events
+namespace MeetWave.Pages.Events
 {
     public partial class RegionSelector : ComponentBase
     {

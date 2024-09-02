@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
-using FetWaveWWW.Services;
+using MeetWave.Services;
 using Ixnas.AltchaNet;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
-namespace FetWaveWWW.Areas.Identity.Pages.Account
+namespace MeetWave.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {

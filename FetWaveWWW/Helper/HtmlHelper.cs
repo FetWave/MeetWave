@@ -1,8 +1,8 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Services;
 using System.Web;
 
-namespace FetWaveWWW.Helper
+namespace MeetWave.Helper
 {
     public class HtmlHelper
     {

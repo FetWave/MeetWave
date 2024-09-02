@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 
-namespace FetWaveWWW.Services
+namespace MeetWave.Services
 {
     public class GoogleService : IEmailSender
     {
@@ -34,7 +34,7 @@ namespace FetWaveWWW.Services
             var baseClient = new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
-                ApplicationName = "FetwaveWWW",
+                ApplicationName = "MeetWave",
             };
 
             Calendar = new CalendarService(baseClient);

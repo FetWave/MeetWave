@@ -1,20 +1,23 @@
-using FetWaveWWW.Data;
-using FetWaveWWW.Services;
+using MeetWave.Data;
+using MeetWave.Services;
 using Ixnas.AltchaNet;
+using MeetWave.Services;
+using MeetWave.Services.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
+using Stripe;
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("FetWaveWWWContextConnection") ?? throw new InvalidOperationException("Connection string 'FetWaveWWWContextConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("MeetWaveContextConnection") ?? throw new InvalidOperationException("Connection string 'MeetWaveContextConnection' not found.");
 
-builder.Services.AddDbContext<FetWaveWWWContext>(
+builder.Services.AddDbContext<MeetWaveContext>(
     options => options.UseSqlServer(connectionString),
     contextLifetime: ServiceLifetime.Transient,
     optionsLifetime: ServiceLifetime.Transient);
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<FetWaveWWWContext>();
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MeetWaveContext>();
 
 
 // Add services to the container.
@@ -31,6 +34,8 @@ builder.Services.AddSingleton<GoogleService>();
 builder.Services.AddSingleton<IEmailSender, GoogleService>();
 
 builder.Services.AddScoped<SeedDataService>();
+
+builder.Services.AddSingleton<IPaymentsService, StripePaymentsService>();
 
 builder.Services.AddTransient<EventsService>();
 builder.Services.AddTransient<MessagesService>();
@@ -82,5 +87,17 @@ using var scope = app.Services.CreateScope();
 var seedService = scope.ServiceProvider.GetService<SeedDataService>();
 await seedService?.SeedEventInfra();
 await seedService?.SeedProfileInfra();
+
+switch (app.Configuration["PaymentProcessor"].ToLower())
+{
+    case "stripe":
+        var privateKey = app.Configuration["Authentication:Stripe:PrivateApiKey"];
+        var publicKey = app.Configuration["Authentication:Stripe:PublicApiKey"];
+        var apiKey = string.IsNullOrEmpty(privateKey) ? publicKey : privateKey;
+        StripeConfiguration.ApiKey = apiKey;
+        break;
+    default:
+        break;
+}
 
 app.Run();

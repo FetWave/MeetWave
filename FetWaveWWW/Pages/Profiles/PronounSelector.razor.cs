@@ -1,10 +1,10 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Data.DTOs.Profile;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Data.DTOs.Profile;
+using MeetWave.Services;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics.Contracts;
 
-namespace FetWaveWWW.Pages.Profiles
+namespace MeetWave.Pages.Profiles
 {
     public partial class PronounSelector : ComponentBase
     {

@@ -1,4 +1,4 @@
-﻿namespace FetWaveWWW.Helper
+﻿namespace MeetWave.Helper
 {
     public enum RsvpStateEnum
     {

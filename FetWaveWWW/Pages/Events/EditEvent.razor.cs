@@ -1,14 +1,14 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity.UI;
 using System.Runtime.CompilerServices;
-using static FetWaveWWW.Pages.Events.DatetimePicker;
-using static FetWaveWWW.Pages.Events.RegionSelector;
+using static MeetWave.Pages.Events.DatetimePicker;
+using static MeetWave.Pages.Events.RegionSelector;
 
-namespace FetWaveWWW.Pages.Events
+namespace MeetWave.Pages.Events
 {
     [Authorize]
     public partial class EditEvent : ComponentBase

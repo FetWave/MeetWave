@@ -1,17 +1,17 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Data.DTOs.Messages;
-using FetWaveWWW.Data.DTOs.Profile;
+﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Data.DTOs.Messages;
+using MeetWave.Data.DTOs.Profile;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using System.Reflection.Emit;
 
-namespace FetWaveWWW.Data;
+namespace MeetWave.Data;
 
-public class FetWaveWWWContext : IdentityDbContext<IdentityUser>
+public class MeetWaveContext : IdentityDbContext<IdentityUser>
 {
-    public FetWaveWWWContext(DbContextOptions<FetWaveWWWContext> options)
+    public MeetWaveContext(DbContextOptions<MeetWaveContext> options)
         : base(options) { }
 
     public DbSet<CalendarEvent> Events { get; set; }

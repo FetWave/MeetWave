@@ -1,6 +1,6 @@
-﻿using FetWaveWWW.Data;
-using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Data.DTOs.Profile;
+﻿using MeetWave.Data;
+using MeetWave.Data.DTOs.Events;
+using MeetWave.Data.DTOs.Profile;
 using Google.Apis.Gmail.v1.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,12 +10,12 @@ using Microsoft.Identity.Client;
 using System.Linq.Dynamic.Core;
 using System.Runtime.CompilerServices;
 
-namespace FetWaveWWW.Services
+namespace MeetWave.Services
 {
     public class ProfilesService
     {
         private readonly IMemoryCache _cache;
-        private readonly FetWaveWWWContext _context;
+        private readonly MeetWaveContext _context;
 
 
         public static readonly UserProfile PrivateProfile
@@ -28,7 +28,7 @@ namespace FetWaveWWW.Services
                 AboutMe = "Private Profile"
             };
 
-        public ProfilesService(IMemoryCache cache, FetWaveWWWContext context)
+        public ProfilesService(IMemoryCache cache, MeetWaveContext context)
         {
             _cache = cache;
             _context = context;

@@ -1,6 +1,6 @@
-﻿using FetWaveWWW.Data.DTOs.Messages;
+﻿using MeetWave.Data.DTOs.Messages;
 
-namespace FetWaveWWW.Helper
+namespace MeetWave.Helper
 {
     public class MessageWrapper
     {

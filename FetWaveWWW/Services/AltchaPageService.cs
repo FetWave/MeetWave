@@ -3,7 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Security.Cryptography;
 using System.Text.Json;
 
-namespace FetWaveWWW.Services
+namespace MeetWave.Services
 {
     internal class AltchaCache : IAltchaChallengeStore
     {

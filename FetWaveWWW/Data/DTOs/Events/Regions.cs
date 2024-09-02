@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace FetWaveWWW.Data.DTOs.Events
+namespace MeetWave.Data.DTOs.Events
 {
     [Index(nameof(StateCode))]
     public class Region

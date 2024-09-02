@@ -1,9 +1,9 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Services;
 using Microsoft.IdentityModel.Abstractions;
 using System.Diagnostics.Metrics;
 
-namespace FetWaveWWW.Helper
+namespace MeetWave.Helper
 {
     public class RSVPHelper
     {

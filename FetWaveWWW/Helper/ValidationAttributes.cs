@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace FetWaveWWW.Helper
+namespace MeetWave.Helper
 {
     public class BeforeEndDateAttribute : ValidationAttribute
     {

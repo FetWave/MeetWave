@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FetWaveWWW.Data.DTOs.Messages
+namespace MeetWave.Data.DTOs.Messages
 {
     public class MessageRecipient
     {

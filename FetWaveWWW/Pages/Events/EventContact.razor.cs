@@ -1,12 +1,12 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
-using FetWaveWWW.Helper;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Helper;
+using MeetWave.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
-namespace FetWaveWWW.Pages.Events
+namespace MeetWave.Pages.Events
 {
     [Authorize]
     public partial class EventContact : ComponentBase

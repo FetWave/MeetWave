@@ -1,9 +1,9 @@
-﻿using FetWaveWWW.Data.DTOs.Events;
+﻿using MeetWave.Data.DTOs.Events;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FetWaveWWW.Data.DTOs.Profile
+namespace MeetWave.Data.DTOs.Profile
 {
     public class UserProfile
     {

@@ -1,13 +1,13 @@
-﻿using FetWaveWWW.Data.DTOs.Messages;
-using FetWaveWWW.Helper;
-using FetWaveWWW.Services;
+﻿using MeetWave.Data.DTOs.Messages;
+using MeetWave.Helper;
+using MeetWave.Services;
 using Microsoft.AspNetCore.Components;
 using Radzen.Blazor;
 using Radzen.Blazor.Rendering;
 
-namespace FetWaveWWW.Pages.Messages
+namespace MeetWave.Pages.Messages
 {
-    public partial class Messages
+    public partial class Messages : ComponentBase
     {
 #nullable disable
         [Inject]

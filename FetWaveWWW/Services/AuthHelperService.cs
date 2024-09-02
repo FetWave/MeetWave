@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 
-namespace FetWaveWWW.Services
+namespace MeetWave.Services
 {
     public class AuthHelperService
     {

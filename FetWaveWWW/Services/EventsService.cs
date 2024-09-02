@@ -1,19 +1,19 @@
-﻿using FetWaveWWW.Data;
-using FetWaveWWW.Data.DTOs.Events;
+﻿using MeetWave.Data;
+using MeetWave.Data.DTOs.Events;
 using Google.Apis.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Radzen;
 
-namespace FetWaveWWW.Services
+namespace MeetWave.Services
 {
     public class EventsService
     {
         private readonly IMemoryCache _cache;
-        private readonly FetWaveWWWContext _context;
+        private readonly MeetWaveContext _context;
 
-        public EventsService(IMemoryCache cache, FetWaveWWWContext context)
+        public EventsService(IMemoryCache cache, MeetWaveContext context)
         {
             _cache = cache;
             _context = context;
