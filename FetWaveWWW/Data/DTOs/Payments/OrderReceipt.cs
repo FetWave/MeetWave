@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MeetWave.Data.DTOs.Payments
 {
-    public class FeeReceipt
+    public class OrderReceipt
     {
         [Key]
         public int Id { get; set; }
@@ -21,7 +21,7 @@ namespace MeetWave.Data.DTOs.Payments
         public DateTime? PaidTS { get; set; }
 
         [ForeignKey(nameof(FeeId))]
-        public virtual CalendarEventFee Fee { get; set; }
+        public virtual Order Order { get; set; }
         [ForeignKey(nameof(CreatedUserId))]
         public virtual IdentityUser? CreatedUser { get; set; }
         [ForeignKey(nameof(UserId))]

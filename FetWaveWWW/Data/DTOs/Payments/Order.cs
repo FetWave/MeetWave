@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MeetWave.Data.DTOs.Payments
 {
-    public class CalendarEventFee
+    public class Order
     {
         [Key]
         public int Id { get; set; }
@@ -16,15 +16,13 @@ namespace MeetWave.Data.DTOs.Payments
 
         [Required]
         public int EventId { get; set; }
-        [Required]
-        public string ItemName { get; set; }
-        [Required]
-        public long ItemPriceCents { get; set; }
 
 
         [ForeignKey(nameof(EventId))]
         public virtual CalendarEvent Event { get; set; }
         [ForeignKey(nameof(CreatedUserId))]
         public virtual IdentityUser? CreatedUser { get; set; }
+        public virtual ICollection<OrderLineItem> LineItems { get; set; }
+        public virtual OrderReceipt Receipt { get; set; }
     }
 }

@@ -30,8 +30,8 @@ public class MeetWaveContext : IdentityDbContext<IdentityUser>
     public DbSet<UserProfile> Profiles { get; set; }
     public DbSet<UserPronouns> Pronouns { get; set; }
 
-    public DbSet<CalendarEventFee> EventFees { get; set; }
-    public DbSet<FeeReceipt> Receipts { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderReceipt> Receipts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
