@@ -40,7 +40,7 @@
             {
                 <p>No RSVPs for this event</p>
             }
-                @foreach (var r in RSVPs??[])
+            @foreach (var r in RSVPs??[])
             {
                 <RadzenCheckBox @bind-Value=@SelectedRSVPs![r.Id] Name=@($"CheckBox{r.Id}") />
                 <RadzenLabel Text="@r.User.UserName" Component=@($"CheckBox{r.Id}") class="rz-ms-2" />

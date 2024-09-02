@@ -41,6 +41,7 @@ builder.Services.AddTransient<EventsService>();
 builder.Services.AddTransient<MessagesService>();
 builder.Services.AddTransient<ProfilesService>();
 builder.Services.AddTransient<AuthHelperService>();
+builder.Services.AddTransient<OrdersService>();
 
 builder.Services.AddAuthentication()
     .AddGoogle(googleOptions =>

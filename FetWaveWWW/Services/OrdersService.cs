@@ -39,6 +39,14 @@ namespace MeetWave.Services
                 .Where(o => o.UserId == userId.ToString() && o.EventId == eventId)
                 .ToListAsync();
 
+        public async Task<IList<Order>?> GetOrdersByEventId(int eventId)
+            => await _context.Orders
+                .Include(o => o.LineItems)
+                .Include(o => o.Event)
+                .Include(o => o.Receipt)
+                .Where(o => o.EventId == eventId)
+                .ToListAsync();
+
         public async Task<Order?> CreateOrder(int eventId, IEnumerable<Helper.PaymentWrapper.LineItem> lineItems, Guid userId, Guid? createdUserId = null)
         {
 
