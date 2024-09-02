@@ -4,6 +4,7 @@ using MeetWave.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MeetWave.Migrations
 {
     [DbContext(typeof(MeetWaveContext))]
-    partial class MeetWaveContextModelSnapshot : ModelSnapshot
+    [Migration("20240902221754_moveUserToOrder")]
+    partial class moveUserToOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -438,9 +441,6 @@ namespace MeetWave.Migrations
                     b.Property<long>("ItemPriceCents")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ItemQuantity")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
@@ -465,7 +465,7 @@ namespace MeetWave.Migrations
                     b.Property<string>("CreatedUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("OrderId")
+                    b.Property<int>("FeeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("PaidTS")
@@ -478,7 +478,7 @@ namespace MeetWave.Migrations
 
                     b.HasIndex("CreatedUserId");
 
-                    b.HasIndex("OrderId")
+                    b.HasIndex("FeeId")
                         .IsUnique();
 
                     b.ToTable("Receipts");
@@ -989,7 +989,7 @@ namespace MeetWave.Migrations
 
                     b.HasOne("MeetWave.Data.DTOs.Payments.Order", "Order")
                         .WithOne("Receipt")
-                        .HasForeignKey("MeetWave.Data.DTOs.Payments.OrderReceipt", "OrderId")
+                        .HasForeignKey("MeetWave.Data.DTOs.Payments.OrderReceipt", "FeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

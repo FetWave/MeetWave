@@ -13,9 +13,13 @@ namespace MeetWave.Data.DTOs.Payments
         public DateTime CreatedTS { get; set; } = DateTime.UtcNow;
         [Required]
         public string CreatedUserId { get; set; }
+        [Required]
+        public string UserId { get; set; }
 
         [Required]
         public int EventId { get; set; }
+
+        public string? PaymentUrl { get; set; }
 
 
         [ForeignKey(nameof(EventId))]
@@ -24,5 +28,7 @@ namespace MeetWave.Data.DTOs.Payments
         public virtual IdentityUser? CreatedUser { get; set; }
         public virtual ICollection<OrderLineItem> LineItems { get; set; }
         public virtual OrderReceipt Receipt { get; set; }
+        [ForeignKey(nameof(UserId))]
+        public virtual IdentityUser User { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace MeetWave.Pages.Events
         [Inject]
         private NavigationManager Navigation { get; set; }
         [Inject]
-        private IExternalPaymentsService Payments { get; set; }
+        private IPaymentsService Payments { get; set; }
 #nullable enable
 
         [Parameter]

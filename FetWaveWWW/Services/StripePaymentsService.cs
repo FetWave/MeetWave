@@ -5,7 +5,7 @@ using Stripe.Checkout;
 
 namespace MeetWave.Services
 {
-    public class StripePaymentsService : IExternalPaymentsService
+    public class StripePaymentsService : IPaymentsService
     {
 
         public StripePaymentsService()

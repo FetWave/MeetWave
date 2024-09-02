@@ -14,17 +14,13 @@ namespace MeetWave.Data.DTOs.Payments
 
 
         [Required]
-        public int FeeId { get; set; }
-        [Required]
-        public string UserId { get; set; }
+        public int OrderId { get; set; }
         public string? ReceiptId { get; set; }
         public DateTime? PaidTS { get; set; }
 
-        [ForeignKey(nameof(FeeId))]
+        [ForeignKey(nameof(OrderId))]
         public virtual Order Order { get; set; }
         [ForeignKey(nameof(CreatedUserId))]
         public virtual IdentityUser? CreatedUser { get; set; }
-        [ForeignKey(nameof(UserId))]
-        public virtual IdentityUser User { get; set; }
     }
 }

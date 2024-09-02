@@ -35,7 +35,7 @@ builder.Services.AddSingleton<IEmailSender, GoogleService>();
 
 builder.Services.AddScoped<SeedDataService>();
 
-builder.Services.AddSingleton<IExternalPaymentsService, StripePaymentsService>();
+builder.Services.AddSingleton<IPaymentsService, StripePaymentsService>();
 
 builder.Services.AddTransient<EventsService>();
 builder.Services.AddTransient<MessagesService>();
@@ -88,7 +88,7 @@ var seedService = scope.ServiceProvider.GetService<SeedDataService>();
 await seedService?.SeedEventInfra();
 await seedService?.SeedProfileInfra();
 
-switch (app.Configuration["PaymentProcessor"].ToLower())
+switch ((app.Configuration["PaymentProcessor"]?? string.Empty).ToLower())
 {
     case "stripe":
         var privateKey = app.Configuration["Authentication:Stripe:PrivateApiKey"];

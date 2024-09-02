@@ -18,6 +18,8 @@ namespace MeetWave.Data.DTOs.Payments
         public string ItemName { get; set; }
         [Required]
         public long ItemPriceCents { get; set; }
+        [Required]
+        public long ItemQuantity { get; set; } = 1;
 
 
         [ForeignKey(nameof(OrderId))]
