@@ -35,7 +35,7 @@ builder.Services.AddSingleton<IEmailSender, GoogleService>();
 
 builder.Services.AddScoped<SeedDataService>();
 
-builder.Services.AddSingleton<IPaymentsService, StripePaymentsService>();
+builder.Services.AddSingleton<IExternalPaymentsService, StripePaymentsService>();
 
 builder.Services.AddTransient<EventsService>();
 builder.Services.AddTransient<MessagesService>();

@@ -1,5 +1,6 @@
 ﻿using MeetWave.Data.DTOs.Events;
 using MeetWave.Data.DTOs.Messages;
+using MeetWave.Data.DTOs.Payments;
 using MeetWave.Data.DTOs.Profile;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -28,6 +29,9 @@ public class MeetWaveContext : IdentityDbContext<IdentityUser>
 
     public DbSet<UserProfile> Profiles { get; set; }
     public DbSet<UserPronouns> Pronouns { get; set; }
+
+    public DbSet<CalendarEventFee> EventFees { get; set; }
+    public DbSet<FeeReceipt> Receipts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

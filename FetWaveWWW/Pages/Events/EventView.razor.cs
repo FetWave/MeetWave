@@ -20,7 +20,7 @@ namespace MeetWave.Pages.Events
         [Inject]
         private NavigationManager Navigation { get; set; }
         [Inject]
-        private IPaymentsService Payments { get; set; }
+        private IExternalPaymentsService Payments { get; set; }
 #nullable enable
 
         [Parameter]
@@ -43,11 +43,18 @@ namespace MeetWave.Pages.Events
                 Navigation.NavigateTo("/events");
             }
 
+            if (userId.ToString().Equals(calendarEvent?.CreatedUserId, StringComparison.OrdinalIgnoreCase))
+            {
+                Organizer = true;
+            }
+
             GoingHTML = await HtmlHelper.GetRsvpMemberList(Events, calendarEvent!.Id, calendarEvent.CreatedUserId == UserId.ToString(), RsvpStateEnum.Going);
             InterestedHTML = await HtmlHelper.GetRsvpMemberList(Events, calendarEvent.Id, calendarEvent.CreatedUserId == UserId.ToString(), RsvpStateEnum.Interested);
 
             UserRsvp = (await Events.GetRSVPsForEvent(calendarEvent.Id) ?? []).FirstOrDefault(r => r.UserId == UserId.ToString());
         }
+
+        private bool Organizer { get; set; } = false;
 
         private CalendarEvent? calendarEvent { get; set; }
 
