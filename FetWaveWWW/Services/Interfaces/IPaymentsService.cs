@@ -7,7 +7,7 @@
         public string ReceiptId { get; set; }
     }
 
-    public interface IExternalPaymentsService
+    public interface IPaymentsService
     {
         Task<ChargeResponse?> ChargeEventCover(string itemName, long priceCents, long quantity, string? connectedAccount, long feePercent, string returnUrl);
         Task<ChargeResponse?> ChargeEventCover(IEnumerable<Helper.PaymentWrapper.LineItem> lineItems, string? connectedAccount, long feePercent, string returnUrl);
