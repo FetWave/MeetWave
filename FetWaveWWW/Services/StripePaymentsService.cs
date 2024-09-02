@@ -12,7 +12,7 @@ namespace MeetWave.Services
         {
         }
 
-        public async Task<string?> ChargeEventCover(long priceCents, long quantity, string? connectedAccount, long feePercent, string returnUrl)
+        public async Task<string?> ChargeEventCover(string itemName, long priceCents, long quantity, string? connectedAccount, long feePercent, string returnUrl)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace MeetWave.Services
                                 Currency = "usd",
                                 ProductData = new()
                                 {
-                                    Name = "Event Cover",
+                                    Name =itemName,
                                 },
                                 UnitAmount = priceCents,
                             },

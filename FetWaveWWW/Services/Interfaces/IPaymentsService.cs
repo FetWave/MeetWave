@@ -2,6 +2,6 @@
 {
     public interface IPaymentsService
     {
-        Task<string?> ChargeEventCover(long priceCents, long quantity, string? connectedAccount, long feePercent, string returnUrl);
+        Task<string?> ChargeEventCover(string itemName, long priceCents, long quantity, string? connectedAccount, long feePercent, string returnUrl);
     }
 }
