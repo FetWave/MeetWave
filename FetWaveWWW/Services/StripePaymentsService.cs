@@ -8,7 +8,7 @@ namespace MeetWave.Services
     public class StripePaymentsService : IPaymentsService
     {
 
-        public StripePaymentsService(SessionService sessionService)
+        public StripePaymentsService()
         {
         }
 
