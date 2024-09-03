@@ -1,4 +1,5 @@
 ﻿using MeetWave.Data.DTOs.Events;
+using MeetWave.Data.DTOs.Messages;
 using MeetWave.Data.DTOs.Payments;
 using MeetWave.Helper;
 using MeetWave.Services;
@@ -6,6 +7,10 @@ using MeetWave.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
+using Radzen.Blazor;
+using System.Runtime.CompilerServices;
+using System.Web;
+using static MeetWave.Helper.PaymentWrapper;
 
 namespace MeetWave.Pages.Events
 {
@@ -88,7 +93,16 @@ namespace MeetWave.Pages.Events
 
         private string? EmailFeedback { get; set; }
 
-        private IList<PaymentWrapper.LineItem>? LineItems { get; set; }
+        private IList<LineItem>? LineItems { get; set; } = [];
+        RadzenDataList<LineItem> dataList;
+
+        private void OnNameChange(string name, LineItem li)
+            => li.Name = name;
+
+        private void DeleteLineItem(LineItem li)
+            => LineItems.Remove(li);
+        private void AddLineItem()
+            => LineItems.Add(new());
 
         private void EmailListOnChange(ChangeEventArgs args)
         {
@@ -183,7 +197,7 @@ namespace MeetWave.Pages.Events
                 + "~~~~~"
                 + "<br/>"
                 + FormatLineItems();
-            var contextSubject =   $"Fetwave event Invoice - {(!string.IsNullOrEmpty(EmailSubject) ? (" - " + EmailSubject) : string.Empty)}";
+            var contextSubject =   $"Fetwave event Invoice {(!string.IsNullOrEmpty(EmailSubject) ? (" - " + EmailSubject) : string.Empty)}";
 
             await Messages.StartGroupMessageBCC(UserId.ToString()!, InvoiceRecipients?.Select(r => r.Id) ?? [], contextSubject, contextBody);
 
@@ -197,11 +211,25 @@ namespace MeetWave.Pages.Events
 
         private string FormatLineItems()
         {
-            return string.Empty;
+            return "<ul>" + string.Join("<br/>", (LineItems ?? []).Select(li => $"<li>{HttpUtility.HtmlEncode(li.Name)} x {li.Quantity} @ ${(decimal)li.UnitPriceCents / 100:0.00}</li>")) + "</ul>" 
+                + $"<p>Total : ${(decimal)(LineItems ?? []).Sum(li => li.GetTotal()) / 100:0.00}</p>";
+        }
+
+        private string FormatOrders(Order order)
+        {
+            return $"<p>Invoice Sent On {order.Receipt.CreatedTS}</p><ul>" + string.Join("<br/>", (order.LineItems ?? []).Select(li => $"<li>{HttpUtility.HtmlEncode(li.ItemName)} x {li.ItemQuantity} @ ${(decimal)li.ItemPriceCents / 100:0.00}</li>")) + "</ul>"
+                + (order.Receipt.PaidTS == null ? $"<p>Unpaid  <a href=\"{order.PaymentUrl}\">PAY HERE</a>" : "PAID");
         }
 
         private bool ValidateLineItems()
         {
+            if (!(LineItems?.Any() ?? false)) return false;
+
+            foreach(var li in LineItems ?? [])
+            {
+                if (string.IsNullOrWhiteSpace(li.Name) || li.Quantity <= 0 || li.UnitPriceCents <= 0)
+                    return false;
+            }
             return true;
         }
 

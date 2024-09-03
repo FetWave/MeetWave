@@ -62,8 +62,13 @@ namespace MeetWave.Services
         {
             try
             {
-                var total = lineItems.Select(li => li.Quantity * li.UnitPriceCents).Sum();
-                var fee = (total * feePercent) / 100;
+                var fee = (long?)null;
+                if (!string.IsNullOrWhiteSpace(connectedAccount))
+                {
+                    var total = lineItems.Select(li => li.Quantity * li.UnitPriceCents).Sum();
+                    fee = (total * feePercent) / 100;
+                }
+                
                 var options = new SessionCreateOptions
                 {
                     LineItems = lineItems.Select(li => new SessionLineItemOptions()

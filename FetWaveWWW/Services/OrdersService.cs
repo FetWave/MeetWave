@@ -9,11 +9,13 @@ namespace MeetWave.Services
     {
         private readonly MeetWaveContext _context;
         private readonly IPaymentsService _payments;
+        private string returnUrl;
 
-        public OrdersService(MeetWaveContext context, IPaymentsService payments)
+        public OrdersService(MeetWaveContext context, IPaymentsService payments, IConfiguration configuration)
         {
             _context = context;
             _payments = payments;
+            returnUrl = configuration["PaymentReturnUrl"] ?? throw new Exception("Must specify payment return URL");
         }
 
         public async Task<Order?> GetOrderById(int id)
@@ -53,7 +55,7 @@ namespace MeetWave.Services
             if (eventId <= 0 || userId == default || !(lineItems?.Any() ?? false))
                 throw new ArgumentNullException();
 
-            var session = await _payments.ChargeEventCover(lineItems, null, 0, null);
+            var session = await _payments.ChargeEventCover(lineItems, null, 0, returnUrl);
             if (session == null)
                 return null;
 

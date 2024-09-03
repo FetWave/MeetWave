@@ -185,6 +185,7 @@ namespace MeetWave.Services
         public async Task<CalendarEvent?> GetEventById(int? id = null, Guid? guid = null)
             => await _context.Events
                 .Include(e => e.Region)
+                .Include(e => e.CreatedUser)
                 .FirstOrDefaultAsync(e => e.Id == id || e.UniqueId == guid);
 
         public async Task<IEnumerable<CalendarEvent>?> GetEventsForRegion(DateTime startTime, DateTime endTime, int regionId)

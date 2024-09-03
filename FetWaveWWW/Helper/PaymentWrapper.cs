@@ -7,6 +7,9 @@
             public string Name { get; set; }
             public long UnitPriceCents { get; set; }
             public long Quantity { get; set; }
+
+            public long GetTotal()
+                => Quantity * UnitPriceCents;
         }
     }
 }
