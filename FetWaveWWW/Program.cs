@@ -107,6 +107,8 @@ switch ((app.Configuration["EmailSender"] ?? string.Empty).ToLower())
         builder.Services.AddSingleton<IEmailSender, GoogleService>();
         break;
     case "smtp":
+        builder.Services.AddSingleton<IExternalEmailSender, SMTPEmailSender>();
+        builder.Services.AddSingleton<IEmailSender, SMTPEmailSender>();
         break;
     default:
         break;
