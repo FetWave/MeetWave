@@ -61,6 +61,21 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
+switch ((builder.Configuration["EmailSender"] ?? string.Empty).ToLower())
+{
+    case "google":
+        builder.Services.AddSingleton<IExternalEmailSender, GoogleService>();
+        builder.Services.AddSingleton<IEmailSender, GoogleService>();
+        break;
+    case "smtp":
+        builder.Services.AddSingleton<IExternalEmailSender, SMTPEmailSender>();
+        builder.Services.AddSingleton<IEmailSender, SMTPEmailSender>();
+        break;
+    default:
+        break;
+}
+
+
 var app = builder.Build();
 
 app.UseForwardedHeaders();
@@ -95,20 +110,6 @@ switch ((app.Configuration["PaymentProcessor"]?? string.Empty).ToLower())
         var publicKey = app.Configuration["Authentication:Stripe:PublicApiKey"];
         var apiKey = string.IsNullOrEmpty(privateKey) ? publicKey : privateKey;
         StripeConfiguration.ApiKey = apiKey;
-        break;
-    default:
-        break;
-}
-
-switch ((app.Configuration["EmailSender"] ?? string.Empty).ToLower())
-{
-    case "google":
-        builder.Services.AddSingleton<IExternalEmailSender, GoogleService>();
-        builder.Services.AddSingleton<IEmailSender, GoogleService>();
-        break;
-    case "smtp":
-        builder.Services.AddSingleton<IExternalEmailSender, SMTPEmailSender>();
-        builder.Services.AddSingleton<IEmailSender, SMTPEmailSender>();
         break;
     default:
         break;
