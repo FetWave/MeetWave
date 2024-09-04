@@ -153,7 +153,7 @@ namespace MeetWave.Areas.Identity.Pages.Account
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
+                        return RedirectToPage("RegisterConfirmation", new { username = Input.Username, returnUrl });
                     }
                     else
                     {
