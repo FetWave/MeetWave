@@ -31,7 +31,6 @@ builder.Services.AddSingleton<AltchaPageService>();
 builder.Services.AddSingleton<IAltchaChallengeStore, AltchaCache>();
 
 builder.Services.AddSingleton<GoogleService>();
-builder.Services.AddSingleton<IEmailSender, GoogleService>();
 
 builder.Services.AddScoped<SeedDataService>();
 
@@ -96,6 +95,18 @@ switch ((app.Configuration["PaymentProcessor"]?? string.Empty).ToLower())
         var publicKey = app.Configuration["Authentication:Stripe:PublicApiKey"];
         var apiKey = string.IsNullOrEmpty(privateKey) ? publicKey : privateKey;
         StripeConfiguration.ApiKey = apiKey;
+        break;
+    default:
+        break;
+}
+
+switch ((app.Configuration["EmailSender"] ?? string.Empty).ToLower())
+{
+    case "google":
+        builder.Services.AddSingleton<IExternalEmailSender, GoogleService>();
+        builder.Services.AddSingleton<IEmailSender, GoogleService>();
+        break;
+    case "smtp":
         break;
     default:
         break;

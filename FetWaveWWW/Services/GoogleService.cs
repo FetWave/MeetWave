@@ -4,13 +4,14 @@ using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Google.Apis.Services;
+using MeetWave.Services.Interfaces;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MeetWave.Services
 {
-    public class GoogleService : IEmailSender
+    public class GoogleService : IEmailSender, IExternalEmailSender
     {
         public readonly CalendarService Calendar;
         public readonly GmailService Gmail;

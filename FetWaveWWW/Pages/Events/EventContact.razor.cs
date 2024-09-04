@@ -1,6 +1,7 @@
 ﻿using MeetWave.Data.DTOs.Events;
 using MeetWave.Helper;
 using MeetWave.Services;
+using MeetWave.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
@@ -24,7 +25,7 @@ namespace MeetWave.Pages.Events
         [Inject]
         public MessagesService Messages { get; set; }
         [Inject]
-        public GoogleService Google { get; set; }
+        public IExternalEmailSender Emails { get; set; }
         [Inject]
         public AuthHelperService Auth { get; set; }
         [Inject]
@@ -173,7 +174,7 @@ namespace MeetWave.Pages.Events
 
             if (toEmails?.Any() ?? false)
             {
-                await Google.EmailListAsync(toEmails!, contextSubject, contextBody);
+                await Emails.EmailListAsync(toEmails!, contextSubject, contextBody);
                 EmailFeedback = "Email sent";
             }
                 

@@ -27,7 +27,7 @@ namespace MeetWave.Pages.Events
         [Inject]
         private NavigationManager Navigation { get; set; }
         [Inject]
-        public GoogleService Google { get; set; }
+        public IExternalEmailSender Emails { get; set; }
         [Inject]
         private OrdersService Orders { get; set; }
         [Inject]
@@ -204,7 +204,7 @@ namespace MeetWave.Pages.Events
 
             if (toEmails?.Any() ?? false)
             {
-                await Google.EmailListAsync(toEmails!, contextSubject, contextBody);
+                await Emails.EmailListAsync(toEmails!, contextSubject, contextBody);
                 EmailFeedback = "Email sent";
             }
 
