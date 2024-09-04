@@ -4,6 +4,7 @@ using MeetWave.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MeetWave.Migrations
 {
     [DbContext(typeof(MeetWaveContext))]
-    partial class MeetWaveContextModelSnapshot : ModelSnapshot
+    [Migration("20240904172851_checkinOnRsvp")]
+    partial class checkinOnRsvp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,7 +201,7 @@ namespace MeetWave.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CheckInUserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedTS")
                         .HasColumnType("datetime2");
@@ -234,8 +237,6 @@ namespace MeetWave.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApprovedByUserId");
-
-                    b.HasIndex("CheckInUserId");
 
                     b.HasIndex("CreatedUserId");
 
@@ -867,10 +868,6 @@ namespace MeetWave.Migrations
                         .WithMany()
                         .HasForeignKey("ApprovedByUserId");
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "CheckInUser")
-                        .WithMany()
-                        .HasForeignKey("CheckInUserId");
-
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "CreatedUser")
                         .WithMany()
                         .HasForeignKey("CreatedUserId")
@@ -894,8 +891,6 @@ namespace MeetWave.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("ApprovedByUser");
-
-                    b.Navigation("CheckInUser");
 
                     b.Navigation("CreatedUser");
 

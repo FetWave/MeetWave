@@ -1,7 +1,5 @@
 ﻿using MeetWave.Data.DTOs.Events;
 using MeetWave.Services;
-using Microsoft.IdentityModel.Abstractions;
-using System.Diagnostics.Metrics;
 
 namespace MeetWave.Helper
 {
@@ -44,5 +42,12 @@ namespace MeetWave.Helper
 
         public static async Task<int?> RSVPInterested(EventsService events, EventRSVP? rsvp = null, int? eventId = null, string? userId = null)
             => await RSVPChange(events, RsvpStateEnum.Interested, rsvp, eventId, userId);
+
+        public static IEnumerable<char> GetCodeGenerator()
+        {
+            var rand = new Random();
+            var arr = "234679ACDEFGHJKMNRTUVWXYZ";
+            yield return arr[rand.Next(arr.Length)];
+        }
     }
 }

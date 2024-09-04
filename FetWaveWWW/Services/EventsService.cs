@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Radzen;
+using MeetWave.Helper;
+using System.Text.RegularExpressions;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace MeetWave.Services
 {
@@ -79,6 +82,7 @@ namespace MeetWave.Services
                     return await _context.RSVPs
                         .Include(r => r.User)
                         .Include(r => r.State)
+                        .Include(r => r.CheckinCodes)
                         .Where(r => r.EventId == eventId)
                         .ToListAsync();
                 });
@@ -166,6 +170,61 @@ namespace MeetWave.Services
             _cache.Remove($"Events:RSVPs:{rsvp.EventId}");
 
             return rsvp.RSVPStateId;
+        }
+
+        public async Task<string?> CreateCheckinCode(int rsvpId)
+        {
+
+            var rsvp = await _context.RSVPs.FirstOrDefaultAsync(r => r.Id == rsvpId);
+            if (rsvp == null)
+                return null;
+
+            var code = RSVPHelper.GetCodeGenerator().Take(6).ToString();
+            var c = await _context.AddAsync(new CheckinCode()
+            {
+                RsvpId = rsvpId,
+                Code = code!
+            });
+            await _context.SaveChangesAsync();
+
+            _cache.Remove($"Events:RSVPs:{rsvp.EventId}");
+
+            return c.Entity.Code;
+        }
+
+        private async Task<IList<EventRSVP>> GetRsvpsForCheckinCode(int eventId, string code)
+            => await _context.RSVPs
+                .Include(r => r.CheckinCodes)
+                .Include(r => r.User)
+                .Where(r => r.Id == eventId && r.CheckinCodes != null && r.CheckinCodes.Any(c => EF.Functions.Like(c.Code, code)))
+                .ToListAsync();
+
+        public async Task<IList<EventRSVP>> GetRsvpsForCheckinCodeUnsafe(int eventId, string code)
+        {
+            var r = new Regex(@"^[a-zA-Z0-9]*$");
+            return r.IsMatch(code) ? await GetRsvpsForCheckinCode(eventId, code) : throw new Exception("Invalid checkin code"); 
+        }
+
+        public async Task<bool> CheckIn(int id, Guid userId)
+        {
+            try
+            {
+                var checkin = await _context.CheckinCodes
+                .Include(c => c.Rsvp)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (checkin != null)
+                {
+                    var rsvp = checkin.Rsvp;
+                    rsvp.CheckInTS = DateTime.UtcNow;
+                    rsvp.CheckInUserId = userId.ToString();
+                    await AddEditRSVP(rsvp);
+
+                    return true;
+                }
+            }
+            catch { }
+            return false;
         }
 
         public async Task<IEnumerable<Region>?> GetRegions()

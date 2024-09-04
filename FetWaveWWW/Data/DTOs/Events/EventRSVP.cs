@@ -27,6 +27,9 @@ namespace MeetWave.Data.DTOs.Events
         public bool? Private { get; set; } = false;
         public DateTime? ApprovedTS { get; set; }
 
+        public DateTime? CheckInTS { get; set; }
+        public string? CheckInUserId { get; set; }
+
         [ForeignKey(nameof(EventId))]
         public virtual CalendarEvent Event { get; set; }
         [ForeignKey(nameof(UserId))]
@@ -40,5 +43,9 @@ namespace MeetWave.Data.DTOs.Events
         public virtual IdentityUser? UpdatedUser { get; set; }
         [ForeignKey(nameof(ApprovedByUserId))]
         public virtual IdentityUser? ApprovedByUser { get; set; }
+
+        public virtual ICollection<CheckinCode>? CheckinCodes { get; set; }
+        [ForeignKey(nameof(CheckInUserId))]
+        public virtual IdentityUser? CheckInUser { get; set; }
     }
 }

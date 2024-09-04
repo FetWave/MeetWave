@@ -21,6 +21,7 @@ public class MeetWaveContext : IdentityDbContext<IdentityUser>
     public DbSet<Region> Regions { get; set; }
     public DbSet<EventRSVP> RSVPs { get; set; }
     public DbSet<RSVPState> RSVPStates { get; set; }
+    public DbSet<CheckinCode> CheckinCodes { get; set; }
 
     public DbSet<MessageThread> MessageThreads { get; set; }
     public DbSet<MessageLine> MessageLines { get; set; }
@@ -41,11 +42,11 @@ public class MeetWaveContext : IdentityDbContext<IdentityUser>
         // Add your customizations after calling base.OnModelCreating(builder);
 
         builder.Entity<CalendarEvent>()
-        .HasMany(e => e.DressCodes)
-        .WithMany(e => e.Events);
+            .HasMany(e => e.DressCodes)
+            .WithMany(e => e.Events);
 
         builder.Entity<CalendarEvent>()
-        .HasMany(e => e.Categories)
-        .WithMany(e => e.Events);
+            .HasMany(e => e.Categories)
+            .WithMany(e => e.Events);
     }
 }
