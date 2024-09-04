@@ -159,6 +159,57 @@
                     @((MarkupString)FormatOrders(o))
                 }
             </RadzenTabsItem>
+            <RadzenTabsItem Text="Check-In">
+                @if (UserRsvp != null && UserRsvp.DeletedTS == null)
+                {
+                    <p>Check-In Code: @((UserRsvp?.CheckinCodes?.Any() ?? false) ? UserRsvp?.CheckinCodes?.First().Code : "Generate") </p>
+                    if (!(UserRsvp?.CheckinCodes?.Any() ?? false))
+                    {
+                        <RadzenButton Text="Generate Check-In Code" Click="@(async () => await GenerateCode())" />
+                    }
+                }
+                @if (Organizer)
+                {
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-12">
+                                <label>Check in code: </label><input type="text" @bind="OTP"/><RadzenButton Text="Check In" Click="@(async () => await SubmitOTP())" />
+                                    <br />
+                                    <ul>
+                                    @foreach (var r in PendingCheckins)
+                                    {
+                                        <li>@r.User.UserName <RadzenButton Text="Check In" Click="@(async () => await Checkin(r.Id))" /></li>
+                                    }
+                                    </ul>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                @foreach (var r in RSVPs ?? [])
+                                {
+                                    <RadzenLabel Text="@r.User.UserName" Component=@($"CheckBox{r.Id}") class="rz-ms-2" />
+                                    <ul>
+                                        @if (r.ApprovedTS is not null)
+                                        {
+                                            <li>Approved - @r.ApprovedTS.Value.ToString("yyyy-MM-dd HH:mm") UTC - <button type="button" @onclick=@(async () => await UnapproveRSVP(r.Id))>Undo Approval</button></li>
+                                        }
+                                        else
+                                        {
+                                            <li><button type="button" @onclick=@(async () => await ApproveRSVP(r.Id))>Approve</button></li>
+                                        }
+                                        @if (r.CheckInTS is not null)
+                                        {
+                                            <li>Checked In - @r.CheckInTS.Value.ToString("yyyy-MM-dd HH:mm") UTC - <button type="button" @onclick=@(async () => await UndoCheckin(r.Id))>Undo Check-In</button></li>
+                                        }
+                                        else
+                                        {
+                                            <li><button type="button" @onclick=@(async () => await Checkin(r.Id))>Check In</button></li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </RadzenTabsItem>
         </Tabs>
     </RadzenTabs>
     

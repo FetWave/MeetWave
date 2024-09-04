@@ -1,5 +1,6 @@
 ﻿using MeetWave.Data.DTOs.Events;
 using MeetWave.Services;
+using System;
 
 namespace MeetWave.Helper
 {
@@ -43,11 +44,12 @@ namespace MeetWave.Helper
         public static async Task<int?> RSVPInterested(EventsService events, EventRSVP? rsvp = null, int? eventId = null, string? userId = null)
             => await RSVPChange(events, RsvpStateEnum.Interested, rsvp, eventId, userId);
 
-        public static IEnumerable<char> GetCodeGenerator()
+        public static string GetCode(int length)
         {
-            var rand = new Random();
-            var arr = "234679ACDEFGHJKMNRTUVWXYZ";
-            yield return arr[rand.Next(arr.Length)];
+            var random = new Random();
+            const string chars = "234679ACDEFGHJKMNRTUVWXYZ";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

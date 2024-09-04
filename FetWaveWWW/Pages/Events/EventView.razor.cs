@@ -96,6 +96,42 @@ namespace MeetWave.Pages.Events
         private IList<LineItem>? LineItems { get; set; } = [];
         RadzenDataList<LineItem> dataList;
 
+        private string OTP { get; set; } = string.Empty;
+        private IList<EventRSVP> PendingCheckins { get; set; } = [];
+
+        private async Task SubmitOTP()
+        {
+            if (!string.IsNullOrWhiteSpace(OTP))
+            {
+                var rsvp = await Events.GetRsvpsForCheckinCodeUnsafe(calendarEvent!.Id, OTP);
+                if ((rsvp?.Count ?? 0) == 1)
+                {
+                    OTP = string.Empty;
+                    await Checkin(rsvp.First().Id);
+                }
+                else if (rsvp?.Any() ?? false)
+                {
+                    PendingCheckins = rsvp;
+                    StateHasChanged();
+                }
+            }
+        }
+
+        private async Task Checkin(int id)
+        {
+            PendingCheckins = [];
+            await Events.CheckIn(id, UserId.Value);
+            RSVPs = await Events.GetRSVPsForEvent(calendarEvent.Id);
+            StateHasChanged();
+        }
+
+        private async Task UndoCheckin(int id)
+        {
+            await Events.UndoCheckin(id, UserId.Value);
+            RSVPs = await Events.GetRSVPsForEvent(calendarEvent.Id);
+            StateHasChanged();
+        }
+
         private void OnNameChange(string name, LineItem li)
             => li.Name = name;
 
@@ -232,6 +268,15 @@ namespace MeetWave.Pages.Events
                     return false;
             }
             return true;
+        }
+
+        private async Task GenerateCode()
+        {
+            if (UserRsvp == null)
+                return;
+
+            await Events.CreateCheckinCode(UserRsvp.Id);
+            StateHasChanged();
         }
 
         private void GotoEditEvent()

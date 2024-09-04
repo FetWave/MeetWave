@@ -8,6 +8,7 @@ using Radzen;
 using MeetWave.Helper;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices.Marshalling;
+using Microsoft.AspNetCore.Identity;
 
 namespace MeetWave.Services
 {
@@ -144,6 +145,28 @@ namespace MeetWave.Services
                 _context.Entry(localEvent).State = EntityState.Detached;
             }
 
+            var localCheckinUser = _context.Set<IdentityUser>()
+                .Local
+                .FirstOrDefault(entry => entry.Id.Equals(rsvp.CheckInUserId));
+
+            // check if local is not null 
+            if (localCheckinUser != null)
+            {
+                // detach
+                _context.Entry(localCheckinUser).State = EntityState.Detached;
+            }
+
+            var localUpdateUser = _context.Set<IdentityUser>()
+               .Local
+               .FirstOrDefault(entry => entry.Id.Equals(rsvp.UpdatedUserId));
+
+            // check if local is not null 
+            if (localUpdateUser != null)
+            {
+                // detach
+                _context.Entry(localUpdateUser).State = EntityState.Detached;
+            }
+
             var localRegion = _context.Set<Region>()
                 .Local
                 .FirstOrDefault(entry => entry.Id.Equals(rsvp.Event?.Region?.Id));
@@ -179,7 +202,7 @@ namespace MeetWave.Services
             if (rsvp == null)
                 return null;
 
-            var code = RSVPHelper.GetCodeGenerator().Take(6).ToString();
+            var code = RSVPHelper.GetCode(6);
             var c = await _context.AddAsync(new CheckinCode()
             {
                 RsvpId = rsvpId,
@@ -193,10 +216,11 @@ namespace MeetWave.Services
         }
 
         private async Task<IList<EventRSVP>> GetRsvpsForCheckinCode(int eventId, string code)
-            => await _context.RSVPs
-                .Include(r => r.CheckinCodes)
-                .Include(r => r.User)
-                .Where(r => r.Id == eventId && r.CheckinCodes != null && r.CheckinCodes.Any(c => EF.Functions.Like(c.Code, code)))
+            => await _context.CheckinCodes
+                .Include(c => c.Rsvp)
+                .Include(c => c.Rsvp.User)
+                .Where(c => EF.Functions.Like(c.Code, code) && c.Rsvp.EventId == eventId)
+                .Select(c => c.Rsvp)
                 .ToListAsync();
 
         public async Task<IList<EventRSVP>> GetRsvpsForCheckinCodeUnsafe(int eventId, string code)
@@ -209,15 +233,35 @@ namespace MeetWave.Services
         {
             try
             {
-                var checkin = await _context.CheckinCodes
-                .Include(c => c.Rsvp)
+                var rsvp = await _context.RSVPs
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-                if (checkin != null)
+                if (rsvp != null)
                 {
-                    var rsvp = checkin.Rsvp;
                     rsvp.CheckInTS = DateTime.UtcNow;
                     rsvp.CheckInUserId = userId.ToString();
+                    await AddEditRSVP(rsvp);
+
+                    return true;
+                }
+            }
+            catch { }
+            return false;
+        }
+
+        public async Task<bool> UndoCheckin(int id, Guid userId)
+        {
+            try
+            {
+                var rsvp = await _context.RSVPs
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (rsvp != null)
+                {
+                    rsvp.CheckInTS = null;
+                    rsvp.CheckInUserId = null;
+                    rsvp.UpdatedTS = DateTime.UtcNow;
+                    rsvp.UpdatedUserId = userId.ToString();
                     await AddEditRSVP(rsvp);
 
                     return true;
