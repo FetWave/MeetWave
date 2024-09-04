@@ -1,0 +1,29 @@
+﻿@page "/receipt/{receiptId}"
+@page "/order/{orderId}"
+@page "/invoices/{calendarEventId}"
+@page "/order/stripeReturn"
+
+@if (orderReceipts?.Any() ?? false)
+{
+    foreach (var o in orderReceipts)
+    {
+        if (o != null)
+        {
+            @((MarkupString)FormatOrder(o.Order))
+            if (o.PaidTS == null && o.Order?.PaymentUrl != null)
+            {
+                <RadzenButton Click="(() => Navigation.NavigateTo(o.Order.PaymentUrl))" Text="Pay Here" />
+            }
+            else if (o.PaidTS != null)
+            {
+                <p>PAID</p>
+            }
+            else
+            {
+                <p>Something went wrong, please contact the event coordinator</p>
+            }
+            <br />
+            <br />
+        }
+    }
+}

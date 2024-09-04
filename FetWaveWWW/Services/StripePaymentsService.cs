@@ -1,5 +1,4 @@
 ﻿using MeetWave.Services.Interfaces;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Stripe;
 using Stripe.Checkout;
 
@@ -10,6 +9,24 @@ namespace MeetWave.Services
 
         public StripePaymentsService()
         {
+        }
+
+        public async Task<ReceiptDetails?> GetReceiptDetails(string receiptId)
+        {
+            var service = new SessionService();
+            var receipt = await service.GetAsync(receiptId);
+            var status = receipt.PaymentStatus.ToLower() switch
+            {
+                "no_payment_required" => ReceiptDetails.PaidStatus.NoPaymentNeeded,
+                "paid" => ReceiptDetails.PaidStatus.Paid,
+                "unpaid" => ReceiptDetails.PaidStatus.Unpaid,
+                _ => (ReceiptDetails.PaidStatus?)null
+            };
+            return new()
+            {
+                ReceiptId = receiptId,
+                Status = status,
+            };
         }
 
         public async Task<ChargeResponse?> ChargeEventCover(string itemName, long priceCents, long quantity, string? connectedAccount, long feePercent, string returnUrl)

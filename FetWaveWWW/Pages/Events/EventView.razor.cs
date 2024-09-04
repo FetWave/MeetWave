@@ -196,6 +196,7 @@ namespace MeetWave.Pages.Events
                 + "<br/>"
                 + "~~~~~"
                 + "<br/>"
+                + $"<a href=\"{Navigation.BaseUri}invoices/{calendarEvent.Id}\">VIEW INVOICE</a>"
                 + FormatLineItems();
             var contextSubject =   $"Fetwave event Invoice {(!string.IsNullOrEmpty(EmailSubject) ? (" - " + EmailSubject) : string.Empty)}";
 

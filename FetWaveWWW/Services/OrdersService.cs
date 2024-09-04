@@ -18,6 +18,20 @@ namespace MeetWave.Services
             returnUrl = configuration["PaymentReturnUrl"] ?? throw new Exception("Must specify payment return URL");
         }
 
+        public async Task<OrderReceipt?> GetReceipt(string receiptId)
+            => await _context.Receipts
+                .Include(r => r.Order)
+                .Include(r => r.Order.LineItems)
+                .Include(r => r.Order.Event)
+                .FirstOrDefaultAsync(r => r.ReceiptId == receiptId);
+
+        public async Task<OrderReceipt?> GetReceiptByOrderId(int orderId)
+            => await _context.Receipts
+                .Include(r => r.Order)
+                .Include(r => r.Order.LineItems)
+                .Include(r => r.Order.Event)
+                .FirstOrDefaultAsync(r => r.OrderId == orderId);
+
         public async Task<Order?> GetOrderById(int id)
             => await _context.Orders
                 .Include(o => o.LineItems)
