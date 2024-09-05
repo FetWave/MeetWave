@@ -283,11 +283,11 @@ namespace MeetWave.Pages.Events
             sb.Append(r.ApprovedTS != null ? "Approved" : "Not Approved");
             sb.Append("</li>");
             sb.Append("<li>");
-            if (orders?.Any() ?? false)
+            if (orders?.Any(o => o.Receipt.PaidTS != null) ?? false)
             {
-                sb.Append("Invoice Sent");
+                sb.Append("Invoices paid");
                 sb.Append("<ul>");
-                foreach (var o in orders)
+                foreach (var o in orders.Where(o => o.Receipt.PaidTS != null))
                 {
                     sb.Append("<li>");
                     sb.Append(FormatInvoiceSummary(o));
@@ -296,7 +296,7 @@ namespace MeetWave.Pages.Events
                 sb.Append("</ul>");
             }
             else
-                sb.Append("No Invoices");
+                sb.Append("No Invoices paid");
             sb.Append("</li>");
             sb.Append("</li>");
             return sb.ToString();
