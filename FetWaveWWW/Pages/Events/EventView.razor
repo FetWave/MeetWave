@@ -178,7 +178,9 @@
                                     <ul>
                                     @foreach (var r in PendingCheckins)
                                     {
-                                        <li>@r.User.UserName <RadzenButton Text="Check In" Click="@(async () => await Checkin(r.Id))" /></li>
+                                        <li>@r.User.UserName - <RadzenButton Text="Check In" Click="@(async () => await Checkin(r.Id))" />
+                                        @((MarkupString)FormatRsvpListItem(r))
+                                        </li>
                                     }
                                     </ul>
                             </div>

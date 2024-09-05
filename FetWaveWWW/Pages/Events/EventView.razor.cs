@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Radzen.Blazor;
-using System.Runtime.CompilerServices;
+using System.Text;
 using System.Web;
 using static MeetWave.Helper.PaymentWrapper;
 
@@ -104,12 +104,7 @@ namespace MeetWave.Pages.Events
             if (!string.IsNullOrWhiteSpace(OTP))
             {
                 var rsvp = await Events.GetRsvpsForCheckinCodeUnsafe(calendarEvent!.Id, OTP);
-                if ((rsvp?.Count ?? 0) == 1)
-                {
-                    OTP = string.Empty;
-                    await Checkin(rsvp.First().Id);
-                }
-                else if (rsvp?.Any() ?? false)
+                if (rsvp?.Any() ?? false)
                 {
                     PendingCheckins = rsvp;
                     StateHasChanged();
@@ -278,6 +273,38 @@ namespace MeetWave.Pages.Events
             await Events.CreateCheckinCode(UserRsvp.Id);
             StateHasChanged();
         }
+
+        private string FormatRsvpListItem(EventRSVP r)
+        {
+            var orders = EventOrders?.Where(o => o.UserId == r.UserId);
+            var sb = new StringBuilder();
+            sb.Append("<ul>");
+            sb.Append("<li>");
+            sb.Append(r.ApprovedTS != null ? "Approved" : "Not Approved");
+            sb.Append("</li>");
+            sb.Append("<li>");
+            if (orders?.Any() ?? false)
+            {
+                sb.Append("Invoice Sent");
+                sb.Append("<ul>");
+                foreach (var o in orders)
+                {
+                    sb.Append("<li>");
+                    sb.Append(FormatInvoiceSummary(o));
+                    sb.Append("</li>");
+                }
+                sb.Append("</ul>");
+            }
+            else
+                sb.Append("No Invoices");
+            sb.Append("</li>");
+            sb.Append("</li>");
+            return sb.ToString();
+        }
+
+        public string FormatInvoiceSummary(Order order)
+            => $"Invoice Sent On {order.Receipt.CreatedTS} - " + string.Join(", ", order.LineItems.Select(li => $"{li.ItemName} x {li.ItemQuantity}"));
+
 
         private void GotoEditEvent()
         {
