@@ -178,6 +178,17 @@ namespace MeetWave.Services
                 _context.Entry(localRegion).State = EntityState.Detached;
             }
 
+            var localState = _context.Set<RSVPState>()
+                .Local
+                .FirstOrDefault(entry => entry.Id.Equals(rsvp.State?.Id));
+
+            // check if local is not null 
+            if (localState != null)
+            {
+                // detach
+                _context.Entry(localState).State = EntityState.Detached;
+            }
+
             if (rsvp.Id == 0)
             {
                 await _context.AddAsync(rsvp);

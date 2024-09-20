@@ -1,4 +1,5 @@
-﻿using MeetWave.Helper;
+﻿using MeetWave.Data.DTOs.Payments;
+using MeetWave.Helper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -46,15 +47,17 @@ namespace MeetWave.Data.DTOs.Events
 
         [ForeignKey(nameof(RegionId))]
         public virtual Region? Region { get; set; }
-        public virtual ICollection<Category> Categories { get; set; }
-        public virtual ICollection<DressCode> DressCodes { get; set; }
+        public virtual ICollection<Category>? Categories { get; set; }
+        public virtual ICollection<DressCode>? DressCodes { get; set; }
 
         [ForeignKey(nameof(CreatedUserId))]
         public virtual IdentityUser? CreatedUser { get; set; }
         [ForeignKey(nameof(UpdatedUserId))]
         public virtual IdentityUser? UpdatedUser { get; set; }
 
-        public virtual ICollection<EventRSVP> RSVPs { get; set; }
+        public virtual ICollection<EventRSVP>? RSVPs { get; set; }
+
+        public virtual ICollection<EventInventory>? Inventory { get; set; }
 
     }
 }

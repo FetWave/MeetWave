@@ -33,6 +33,13 @@ namespace MeetWave.Services
         {
             try
             {
+                var fee = (long?)null;
+                if (!string.IsNullOrWhiteSpace(connectedAccount) && feePercent > 0)
+                {
+                    var total = priceCents * quantity;
+                    fee = (total * feePercent) / 100;
+                }
+
                 var options = new SessionCreateOptions
                 {
                     LineItems = new()
@@ -53,7 +60,7 @@ namespace MeetWave.Services
                     },
                     PaymentIntentData = new()
                     {
-                        ApplicationFeeAmount = (priceCents * feePercent) / 100
+                        ApplicationFeeAmount = fee
                     },
                     Mode = "payment",
                     SuccessUrl = $"{returnUrl}?session_id={{CHECKOUT_SESSION_ID}}",
@@ -80,7 +87,7 @@ namespace MeetWave.Services
             try
             {
                 var fee = (long?)null;
-                if (!string.IsNullOrWhiteSpace(connectedAccount))
+                if (!string.IsNullOrWhiteSpace(connectedAccount) && feePercent > 0)
                 {
                     var total = lineItems.Select(li => li.Quantity * li.UnitPriceCents).Sum();
                     fee = (total * feePercent) / 100;

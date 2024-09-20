@@ -1,4 +1,5 @@
 ﻿using MeetWave.Data.DTOs.Payments;
+using MeetWave.Helper;
 using MeetWave.Services;
 using MeetWave.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -13,6 +14,7 @@ namespace MeetWave.Pages.Orders
         public int? orderId { get; set; }
         [Parameter]
         public string? receiptId { get; set; }
+        [SupplyParameterFromQuery]
         [Parameter]
         public string? session_id { get; set; }
         [Parameter]
@@ -65,8 +67,8 @@ namespace MeetWave.Pages.Orders
 
         private string FormatOrder(Order order)
         {
-            return $"<p>Invoice Sent On {order.Receipt.CreatedTS}</p><ul>" + string.Join("<br/>", (order.LineItems ?? []).Select(li => $"<li>{HttpUtility.HtmlEncode(li.ItemName)} x {li.ItemQuantity} @ ${(decimal)li.ItemPriceCents / 100:0.00}</li>")) + "</ul>"
-                + $"<p>Total : ${(decimal)(order.LineItems).Sum(li => li.ItemPriceCents * li.ItemQuantity) / 100:0.00}</p>";
+            return $"<p>Invoice Sent On {order.Receipt.CreatedTS}</p><ul>" + string.Join("<br/>", (order.LineItems ?? []).Select(li => $"<li>{HttpUtility.HtmlEncode(li.GetName())} x {li.ItemQuantity} @ {StringHelper.GetDisplayPriceFromCents(li.GetPriceCents())}</li>")) + "</ul>"
+                + $"<p>Total : {StringHelper.GetDisplayPriceFromCents(order.LineItems.Sum(li => li.GetPriceCents() * li.ItemQuantity))}</p>";
         }
     }
 }

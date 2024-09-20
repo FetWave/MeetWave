@@ -66,6 +66,41 @@
                             <p>Going: @((MarkupString)(GoingHTML ?? ""))</p>
                             <p>Interested: @((MarkupString)(InterestedHTML ?? ""))</p>
                         </div>
+                        @if (Inventory?.Count > 0)
+                        {
+                            var hasLI = ssLineItems?.Any() ?? false;
+                            var buttonTitle = $"{(hasLI ? "Add" : "Buy")} Ticket";
+                            <div class="card-body">
+                             <RadzenButton Text=@buttonTitle Style="width: 100%" Click="(() => SSAddLineItem())" />
+                                <RadzenDataList @ref="ssDataList" Data="@ssLineItems" PagerHorizontalAlign="HorizontalAlign.Left">
+                                    <Template Context="li">
+                                        <RadzenCard Variant="Variant.Outlined" class="rz-p-0" Style="width: 100%; overflow: hidden;">
+                                            <RadzenRow Gap="0">
+                                                <RadzenColumn Size="12" SizeLG="3" class="rz-p-4 product-title">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Selection</RadzenText>
+                                                    <RadzenDropDown TValue="int" Change="@((args) => LoadInventory(li, (int)args))" Data=@Inventory TextProperty="ItemName" ValueProperty="Id" Style="width: 100%; max-width: 400px;" Name="InventorySelector" />
+                                                </RadzenColumn>
+                                                <RadzenColumn Size="12" SizeLG="3" class="rz-p-4 product-title">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Price</RadzenText>
+                                                    <RadzenTextBox Disabled="true" Style="width: 100%" aria-label="Inventory Price" Value="@StringHelper.GetDisplayPriceFromCents(li.Inventory?.ItemPriceCents)" />
+                                                </RadzenColumn>
+                                                <RadzenColumn Size="12" SizeLG="3" class="rz-p-4 product-title">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Item Quantity</RadzenText>
+                                                    <RadzenNumeric @bind-Value="@li.Quantity" />
+                                                </RadzenColumn>
+                                                <RadzenColumn Size="12" SizeLG="2" class="rz-p-4">
+                                                    <RadzenButton Text="Delete" Style="width: 100%" Click="(() => SSDeleteLineItem(li))" />
+                                                </RadzenColumn>
+                                            </RadzenRow>
+                                        </RadzenCard>
+                                    </Template>
+                                </RadzenDataList>
+                                @if (hasLI)
+                                {
+                                    <RadzenButton Disabled=@(!ValidateSSLineItems()) Click=@(async () => await Checkout()) Text="Checkout" />
+                                }
+                            </div>
+                        }
                     </div>
                 }
             </RadzenTabsItem>
@@ -74,7 +109,36 @@
                 {
                     <div class="container">
                         <div class="row">
+                            <h1>Inventory</h1>
+                            <RadzenButton Text="AddLineItem" Style="width: 100%" Click="(() => AddInvLineItem())" />
+                            <RadzenDataList @ref="invDataList" Data="@invLineItems" PagerHorizontalAlign="HorizontalAlign.Left">
+                                <Template Context="li">
+                                    <RadzenCard Variant="Variant.Outlined" class="rz-p-0" Style="width: 100%; overflow: hidden;">
+                                        <RadzenRow Gap="0">
+                                            <RadzenColumn Size="12" SizeLG="3" class="rz-p-4 product-title">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Item Name</RadzenText>
+                                                <RadzenTextBox Value="@li.Name" Change=@(args => OnNameChange(args, li)) Style="width: 100%" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeLG="3" class="rz-p-4 product-title">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Item Price (Cents)</RadzenText>
+                                                <RadzenNumeric @bind-Value="@li.UnitPriceCents" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeLG="3" class="rz-p-4 product-title">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Units Available (optional)</RadzenText>
+                                                <RadzenNumeric @bind-Value="@li.QuantityAvailable" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeLG="2" class="rz-p-4">
+                                                <RadzenButton Text="Delete" Style="width: 100%" Click="(async () => await DeleteInventory(li))" />
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                    </RadzenCard>
+                                </Template>
+                            </RadzenDataList>
+                            <RadzenButton Click="@(async () => await ProcessInventory())" Text="Process Inventory" />
+                        </div>
+                        <div class="row">
                             <div class="col-12">
+                                <h1>Individual Invoices</h1>
                                 <RadzenButton Text="AddLineItem" Style="width: 100%" Click="(() => AddLineItem())" />
                                 <RadzenDataList @ref="dataList" Data="@LineItems" PagerHorizontalAlign="HorizontalAlign.Left">
                                     <Template Context="li">
@@ -107,16 +171,46 @@
                             {
                                 <RadzenCheckBox @bind-Value=@SelectedRSVPs![r.Id] Name=@($"CheckBox{r.Id}") />
                                 <RadzenLabel Text="@r.User.UserName" Component=@($"CheckBox{r.Id}") class="rz-ms-2" />
-                                <ul>
-                                    @if (r.ApprovedTS is not null)
-                                    {
-                                        <li>Approved - @r.ApprovedTS.Value.ToString("yyyy-MM-dd HH:mm") UTC - <button type="button" @onclick=@(async () => await UnapproveRSVP(r.Id))>Undo Approval</button></li>
-                                    }
-                                    else
-                                    {
-                                        <li><button type="button" @onclick=@(async () => await ApproveRSVP(r.Id))>Approve</button></li>
-                                    }
-                                </ul>
+                                    <ul>
+                                        @if (r.ApprovedTS is not null)
+                                        {
+                                            <li>Approved - @r.ApprovedTS.Value.ToString("yyyy-MM-dd HH:mm") UTC - <button type="button" @onclick=@(async () => await UnapproveRSVP(r.Id))>Undo Approval</button></li>
+                                        }
+                                        else
+                                        {
+                                            <li><button type="button" @onclick=@(async () => await ApproveRSVP(r.Id))>Approve</button></li>
+                                        }
+                                        @if (r.CheckInTS is not null)
+                                        {
+                                            <li>Checked In - @r.CheckInTS.Value.ToString("yyyy-MM-dd HH:mm") UTC - <button type="button" @onclick=@(async () => await UndoCheckin(r.Id))>Undo Check-In</button></li>
+                                        }
+                                        else
+                                        {
+                                            <li><button type="button" @onclick=@(async () => await Checkin(r.Id))>Check In</button></li>
+                                        }
+
+                                        @{
+                                            var orders = GetEventOrderForUser(Guid.Parse(r.UserId));
+                                        }
+                                        @if (orders?.Any() ?? false)
+                                        {
+                                            var paid = orders.Where(o => o.Receipt.PaidTS != null);
+                                            string paidStatus;
+                                            if (paid.Count() == orders.Count())
+                                                paidStatus = "PAID";
+                                            else if (paid.Count() == 0)
+                                                paidStatus = "UNPAID";
+                                            else
+                                                paidStatus = "PARTIALLY PAID";
+                                            <li>Invoices - @paidStatus</li>
+                                            <ul>
+                                                @foreach (var o in orders)
+                                                {
+                                                    <li>@(o.Receipt.PaidTS != null ? "PAID" : "UNPAID") - @FormatInvoiceSummary(o)</li>
+                                                }
+                                            </ul>
+                                        }
+                                    </ul>
                             }
                             </div>
                             <div class="col-lg-6 col-md-12">
@@ -204,6 +298,28 @@
                                         else
                                         {
                                             <li><button type="button" @onclick=@(async () => await Checkin(r.Id))>Check In</button></li>
+                                        }
+
+                                        @{
+                                            var orders = GetEventOrderForUser(Guid.Parse(r.UserId));
+                                        }
+                                        @if (orders?.Any() ?? false)
+                                        {
+                                            var paid = orders.Where(o => o.Receipt.PaidTS != null);
+                                            string paidStatus;
+                                            if (paid.Count() == orders.Count())
+                                                paidStatus = "PAID";
+                                            else if (paid.Count() == 0)
+                                                paidStatus = "UNPAID";
+                                            else
+                                                paidStatus = "PARTIALLY PAID";
+                                            <li>Invoices - @paidStatus</li>
+                                            <ul>
+                                                @foreach (var o in orders)
+                                                {
+                                                    <li>@(o.Receipt.PaidTS != null ? "PAID" : "UNPAID") - @FormatInvoiceSummary(o)</li>
+                                                }
+                                            </ul>
                                         }
                                     </ul>
                                 }

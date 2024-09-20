@@ -33,6 +33,7 @@ namespace MeetWave.Pages.Events
             {
                 OrganizedEvents = await Events.GetOrganizingEvents(UserId.ToString()!, CalendarStartDate, CalendarEndDate);
                 RsvpedEvents = await Events.GetRsvpedEvents(UserId.ToString()!, CalendarStartDate, CalendarEndDate);
+                await UpdateCalendarEvents();
             }
             loading = false;
         }

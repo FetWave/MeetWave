@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Radzen.Blazor;
+using System.Drawing.Text;
 using System.Text;
 using System.Web;
 using static MeetWave.Helper.PaymentWrapper;
@@ -54,19 +55,22 @@ namespace MeetWave.Pages.Events
                 Navigation.NavigateTo("/events");
             }
 
+            GoingHTML = await HtmlHelper.GetRsvpMemberList(Events, calendarEvent!.Id, calendarEvent.CreatedUserId == UserId.ToString(), RsvpStateEnum.Going);
+            InterestedHTML = await HtmlHelper.GetRsvpMemberList(Events, calendarEvent.Id, calendarEvent.CreatedUserId == UserId.ToString(), RsvpStateEnum.Interested);
+
+            UserRsvp = (await Events.GetRSVPsForEvent(calendarEvent.Id) ?? []).FirstOrDefault(r => r.UserId == UserId.ToString());
+            UserOrders = await Orders.GetOrdersByUserAndEventId(userId, calendarEvent.Id);
+
+            Inventory = await Orders.GetInventoryForEvent(calendarEvent.Id);
+
             if (userId.ToString().Equals(calendarEvent?.CreatedUserId, StringComparison.OrdinalIgnoreCase))
             {
                 Organizer = true;
                 EventOrders = await Orders.GetOrdersByEventId(calendarEvent.Id);
                 RSVPs = await Events.GetRSVPsForEvent(calendarEvent.Id);
                 SelectedRSVPs = RSVPs?.Select(r => r.Id).ToDictionary(x => x!, _ => false) ?? [];
+                invLineItems = Inventory.OrderBy(i => i.Priority ?? int.MaxValue).Select(i => new InventoryLineItem(i)).ToList();
             }
-
-            GoingHTML = await HtmlHelper.GetRsvpMemberList(Events, calendarEvent!.Id, calendarEvent.CreatedUserId == UserId.ToString(), RsvpStateEnum.Going);
-            InterestedHTML = await HtmlHelper.GetRsvpMemberList(Events, calendarEvent.Id, calendarEvent.CreatedUserId == UserId.ToString(), RsvpStateEnum.Interested);
-
-            UserRsvp = (await Events.GetRSVPsForEvent(calendarEvent.Id) ?? []).FirstOrDefault(r => r.UserId == UserId.ToString());
-            UserOrders = await Orders.GetOrdersByUserAndEventId(userId, calendarEvent.Id);
         }
 
         private bool Organizer { get; set; } = false;
@@ -83,6 +87,8 @@ namespace MeetWave.Pages.Events
         private IList<Order>? UserOrders { get; set; }
         private IList<Order>? EventOrders { get; set; }
 
+        private IList<EventInventory>? Inventory { get; set; }
+
         private IEnumerable<EventRSVP>? RSVPs { get; set; }
         private Dictionary<int, bool>? SelectedRSVPs { get; set; }
         private EmailListEnum? EmailList { get; set; } = EmailListEnum.All;
@@ -95,6 +101,11 @@ namespace MeetWave.Pages.Events
 
         private IList<LineItem>? LineItems { get; set; } = [];
         RadzenDataList<LineItem> dataList;
+        private IList<InventoryLineItem>? invLineItems { get; set; } = [];
+        RadzenDataList<InventoryLineItem> invDataList;
+
+        private IList<InventoryLineItem>? ssLineItems { get; set; } = [];
+        RadzenDataList<InventoryLineItem> ssDataList;
 
         private string OTP { get; set; } = string.Empty;
         private IList<EventRSVP> PendingCheckins { get; set; } = [];
@@ -130,10 +141,61 @@ namespace MeetWave.Pages.Events
         private void OnNameChange(string name, LineItem li)
             => li.Name = name;
 
+        private async Task ProcessInventory()
+        {
+            foreach (var li in invLineItems ?? [])
+            {
+                EventInventory inventory;
+                var i = Inventory?.FirstOrDefault(i => i.ItemName.Equals(li.Name, StringComparison.OrdinalIgnoreCase));
+                if (i != null)
+                {
+                    inventory = i;
+                }
+                else
+                {
+                    inventory = new()
+                    {
+                        EventId = calendarEvent!.Id,
+                        CreatedUserId = UserId.ToString()
+                    };
+                }
+                inventory.Priority = li.Priority;
+                inventory.ItemName = li.Name;
+                inventory.ItemPriceCents = li.UnitPriceCents;
+                inventory.ItemAvailableCount = li.QuantityAvailable;
+                await Orders.UpsertInventory(inventory);
+            }
+        }
+
         private void DeleteLineItem(LineItem li)
             => LineItems.Remove(li);
+        private void SSDeleteLineItem(InventoryLineItem li)
+            => ssLineItems.Remove(li);
+
+        private void AddInvLineItem()
+            => invLineItems.Add(new());
         private void AddLineItem()
             => LineItems.Add(new());
+        private void SSAddLineItem()
+            => ssLineItems.Add(new());
+
+
+        private async Task LoadInventory(InventoryLineItem li, int inventoryId)
+        {
+            li.InventoryId = inventoryId;
+            li.Inventory = Inventory.FirstOrDefault(i => i.Id == inventoryId);
+        }
+
+        private async Task DeleteInventory(InventoryLineItem li)
+        {
+            var i = Inventory?.FirstOrDefault(i => i.ItemName.Equals(li.Name, StringComparison.OrdinalIgnoreCase));
+            if (i != null)
+            {
+                await Orders.DeleteInventory(i.Id, UserId!.Value);
+                Inventory = await Orders.GetInventoryForEvent(calendarEvent!.Id);
+            }
+            invLineItems?.Remove(li);
+        }
 
         private void EmailListOnChange(ChangeEventArgs args)
         {
@@ -196,6 +258,15 @@ namespace MeetWave.Pages.Events
             StateHasChanged();
         }
 
+        private async Task Checkout()
+        {
+            var order = await Orders.CreateOrder(calendarEvent!.Id, ssLineItems!, UserId.Value);
+            if (order?.PaymentUrl != null)
+                Navigation.NavigateTo(order.PaymentUrl);
+            else
+                ssLineItems = [];
+        }
+
         private async Task SendEmail()
         {
             if (!ValidateLineItems())
@@ -243,13 +314,13 @@ namespace MeetWave.Pages.Events
 
         private string FormatLineItems()
         {
-            return "<ul>" + string.Join("<br/>", (LineItems ?? []).Select(li => $"<li>{HttpUtility.HtmlEncode(li.Name)} x {li.Quantity} @ ${(decimal)li.UnitPriceCents / 100:0.00}</li>")) + "</ul>" 
-                + $"<p>Total : ${(decimal)(LineItems ?? []).Sum(li => li.GetTotal()) / 100:0.00}</p>";
+            return "<ul>" + string.Join("<br/>", (LineItems ?? []).Select(li => $"<li>{HttpUtility.HtmlEncode(li.Name)} x {li.Quantity} @ {StringHelper.GetDisplayPriceFromCents(li.UnitPriceCents)}</li>")) + "</ul>" 
+                + $"<p>Total : {StringHelper.GetDisplayPriceFromCents((LineItems ?? []).Sum(li => li.GetTotal()))}</p>";
         }
 
         private string FormatOrders(Order order)
         {
-            return $"<p>Invoice Sent On {order.Receipt.CreatedTS}</p><ul>" + string.Join("<br/>", (order.LineItems ?? []).Select(li => $"<li>{HttpUtility.HtmlEncode(li.ItemName)} x {li.ItemQuantity} @ ${(decimal)li.ItemPriceCents / 100:0.00}</li>")) + "</ul>"
+            return $"<p>Invoice Sent On {order.Receipt.CreatedTS}</p><ul>" + string.Join("<br/>", (order.LineItems ?? []).Select(li => $"<li>{HttpUtility.HtmlEncode(li.GetName())} x {li.ItemQuantity} @ {StringHelper.GetDisplayPriceFromCents(li.GetPriceCents())}</li>")) + "</ul>"
                 + (order.Receipt.PaidTS == null ? $"<p>Unpaid  <a href=\"{order.PaymentUrl}\">PAY HERE</a>" : "PAID");
         }
 
@@ -260,6 +331,17 @@ namespace MeetWave.Pages.Events
             foreach(var li in LineItems ?? [])
             {
                 if (string.IsNullOrWhiteSpace(li.Name) || li.Quantity <= 0 || li.UnitPriceCents <= 0)
+                    return false;
+            }
+            return true;
+        }
+        private bool ValidateSSLineItems()
+        {
+            if (!(ssLineItems?.Any() ?? false)) return false;
+
+            foreach (var li in ssLineItems ?? [])
+            {
+                if (li.InventoryId <= 0 || li.Quantity <= 0)
                     return false;
             }
             return true;
@@ -303,8 +385,10 @@ namespace MeetWave.Pages.Events
         }
 
         public string FormatInvoiceSummary(Order order)
-            => $"Invoice Sent On {order.Receipt.CreatedTS} - " + string.Join(", ", order.LineItems.Select(li => $"{li.ItemName} x {li.ItemQuantity}"));
+            => $"Invoice Sent On {order.Receipt.CreatedTS} - " + string.Join(", ", order.LineItems.Select(li => $"{li.GetName()} x {li.ItemQuantity}"));
 
+        public IEnumerable<Order>? GetEventOrderForUser(Guid userId)
+            => EventOrders?.Where(o => o.UserId == userId.ToString());
 
         private void GotoEditEvent()
         {

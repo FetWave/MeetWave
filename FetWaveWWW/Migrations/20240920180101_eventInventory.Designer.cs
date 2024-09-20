@@ -4,6 +4,7 @@ using MeetWave.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MeetWave.Migrations
 {
     [DbContext(typeof(MeetWaveContext))]
-    partial class MeetWaveContextModelSnapshot : ModelSnapshot
+    [Migration("20240920180101_eventInventory")]
+    partial class eventInventory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -425,12 +428,6 @@ namespace MeetWave.Migrations
                     b.Property<string>("CreatedUserId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DeleteTS")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DeleteUserId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
@@ -443,9 +440,6 @@ namespace MeetWave.Migrations
 
                     b.Property<long>("ItemPriceCents")
                         .HasColumnType("bigint");
-
-                    b.Property<int?>("Priority")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

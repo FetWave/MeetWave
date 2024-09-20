@@ -34,6 +34,8 @@ public class MeetWaveContext : IdentityDbContext<IdentityUser>
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderReceipt> Receipts { get; set; }
 
+    public DbSet<EventInventory> Inventory { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
