@@ -18,12 +18,18 @@ namespace MeetWave.Pages.Admin
         public UserManager<IdentityUser> _userManager { get; set; }
         [Inject]
         public AuthHelperService _auth { get; set; }
+        [Inject]
+        private NavigationManager Navigation { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             if (await _auth.HasRole("Administrator"))
             {
                 await RefreshList();
+            }
+            else
+            {
+                Navigation.NavigateTo("/");
             }
         }
 
