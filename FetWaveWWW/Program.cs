@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 using Stripe;
+
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("MeetWaveContextConnection") ?? throw new InvalidOperationException("Connection string 'MeetWaveContextConnection' not found.");
 
@@ -20,16 +21,6 @@ builder.Services
     .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<MeetWaveContext>();
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("IsAdmin", policy =>
-        policy.RequireRole("Administrator"));
-});
-builder.Services.AddRazorPages(options =>
-{
-    options.Conventions.AuthorizeAreaFolder("AdminPanel", "/", "IsAdmin");
-});
 
 
 // Add services to the container.

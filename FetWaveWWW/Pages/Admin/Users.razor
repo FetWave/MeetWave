@@ -1,0 +1,53 @@
+﻿@page "/admin/users"
+@using Microsoft.AspNetCore.Identity;
+
+<h3>Users</h3>
+<div class="row">
+    <div class="col-md-12">
+        @if (UserList.Any() && Roles.Any())
+        {
+            <table class="table-md table-bordered col-1 w-100">
+                <thead>
+                    <tr class="d-table-row my-0">
+                        <td colspan="8"><span class="text-center font-bold" style="font-size: 14pt;">Identity User List</span></td>
+                    </tr>
+
+                    <tr class="text-center font-weight-bold">
+                        <td>Actions</td>
+                        <td class="text-center w-25">Id</td>
+                        <td class="text-center">UserName</td>
+                        <td class="text-center">Roles</td>
+                        <td class="text-center">Email Address</td>
+                        <td class="text-center">EmailConfirmed</td>
+                        <td class="text-center">PhoneNumber</td>
+                        <td class="text-center">LockoutEnd</td>
+                        <td class="text-center">LockoutEnabled</td>
+                        <td class="text-center">AccessFailedCount</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var userRec in UserList)
+                    {
+                        var roles = Roles[userRec.Id];
+                        <tr class="d-table-row my-0">
+                            <td>
+                                <button type="button" onclick=@(() => Delete(userRec.Id))>Delete</button>
+                                <button type="button" onclick=@(() => ToggleAdmin(userRec.Id))>Toggle Admin</button>
+                                <button type="button" onclick=@(() => ToggleModerator(userRec.Id))>Toggle Moderator</button>
+                            </td>
+                            <td colspan="1" class="text-left" style="width: 30em;">@userRec.Id</td>
+                            <td colspan="1" class="text-left">@userRec.UserName</td>
+                            <td colspan="1" class="text-left">@roles</td>
+                            <td colspan="1" class="text-left">@userRec.Email</td>
+                            <td colspan="1" class="text-center">@userRec.EmailConfirmed</td>
+                            <td colspan="1" class="text-left">@userRec.PhoneNumber</td>
+                            <td colspan="1" class="text-left">@userRec.LockoutEnd</td>
+                            <td colspan="1" class="text-center">@userRec.LockoutEnabled</td>
+                            <td colspan="1" class="text-center">@userRec.AccessFailedCount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

@@ -19,5 +19,8 @@ namespace MeetWave.Services
 
         public async Task<string?> GetUserEmail()
             => await GetUserClaim(ClaimTypes.Email);
+
+        public async Task<bool> HasRole(string role)
+            => (await _provider.GetAuthenticationStateAsync()).User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == role);
     }
 }
