@@ -21,6 +21,16 @@ builder.Services
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<MeetWaveContext>();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IsAdmin", policy =>
+        policy.RequireRole("Administrator"));
+});
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeAreaFolder("AdminPanel", "/", "IsAdmin");
+});
+
 
 // Add services to the container.
 builder.Services.AddRazorPages();
