@@ -1,7 +1,6 @@
 using MeetWave.Data;
 using MeetWave.Services;
 using Ixnas.AltchaNet;
-using MeetWave.Services;
 using MeetWave.Services.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +16,10 @@ builder.Services.AddDbContext<MeetWaveContext>(
     contextLifetime: ServiceLifetime.Transient,
     optionsLifetime: ServiceLifetime.Transient);
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MeetWaveContext>();
+builder.Services
+    .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<MeetWaveContext>();
 
 
 // Add services to the container.
@@ -33,6 +35,7 @@ builder.Services.AddSingleton<IAltchaChallengeStore, AltchaCache>();
 builder.Services.AddSingleton<GoogleService>();
 
 builder.Services.AddScoped<SeedDataService>();
+builder.Services.AddScoped<SeedRolesService>();
 
 builder.Services.AddSingleton<IPaymentsService, StripePaymentsService>();
 
@@ -114,5 +117,8 @@ switch ((app.Configuration["PaymentProcessor"]?? string.Empty).ToLower())
     default:
         break;
 }
+
+var rolesService = scope.ServiceProvider.GetService<SeedRolesService>();
+await rolesService?.AddCustomRoles();
 
 app.Run();
